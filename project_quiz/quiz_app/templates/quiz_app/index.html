@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>파일 업로드 및 퀴즈 생성</title>
+</head>
+<body>
+    <h1>파일 업로드</h1>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="file" required>
+        <button type="submit">업로드</button>
+    </form>
+
+    {% if quiz %}
+        <h2>생성된 퀴즈:</h2>
+        <pre>{{ quiz }}</pre>
+    {% elif error %}
+        <p>{{ error }}</p>
+    {% endif %}
+</body>
+</html>
