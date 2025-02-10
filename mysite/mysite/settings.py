@@ -90,28 +90,25 @@ WSGI_APPLICATION = "mysite.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.sqlite3",
+#         "NAME": BASE_DIR / "db.sqlite3",
+#     }
+# }
+
+# settings.py
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+    'default': {
+        'ENGINE': 'django.db.backends.mysql', # mysql 엔진 설정
+        'NAME':'quiz_db', # 데이터베이스 이름
+        'USER':'root', # 데이터베이스 연결시 사용할 유저 이름
+        'PASSWORD':'0000sql', # 유저 패스워드		
+        'HOST':'127.0.0.1', 
+        'PORT':'3306'
     }
 }
 
-# settings.py 
-# mysql 연동 설정
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',  # MySQL 엔진 사용
-#         'NAME': 'quiz_db',   # 사용할 데이터베이스 이름
-#         'USER': 'root',      # MySQL 사용자 계정
-#         'PASSWORD': '0000sql',  # MySQL 비밀번호
-#         'HOST': 'localhost',  # MySQL 서버 주소 (로컬일 경우 localhost)
-#         'PORT': '3306',       # MySQL 포트
-#         'OPTIONS': {
-#             'charset': 'utf8mb4'  # 한글 저장을 위해 UTF-8 설정
-#         }
-#     }
-# }
 
 
 # Password validation
@@ -167,18 +164,18 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 # Provider specific settings
-SOCIALACCOUNT_PROVIDERS = {
-    'google': {
-        # For each OAuth based provider, either add a ``SocialApp``
-        # (``socialaccount`` app) containing the required client
-        # credentials, or list them here:
-        'APP': {
-            'client_id': '123',
-            'secret': '456',
-            'key': ''
-        }
-    }
-}
+# SOCIALACCOUNT_PROVIDERS = {
+#     'naver': {
+#         # For each OAuth based provider, either add a ``SocialApp``
+#         # (``socialaccount`` app) containing the required client
+#         # credentials, or list them here:
+#         'APP': {
+#             'client_id': 'Etv6IXLgKpXnUM2scaQT',
+#             'secret': 'Etv6IXLgKpXnUM2scaQT',
+#             'key': ''
+#         }
+#     }
+# }
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
@@ -192,3 +189,22 @@ SOCIALACCOUNT_LOGOUT_ON_GET = True  # True로 설정하면 GET 방식으로 소�
 SOCIALACCOUNT_LOGIN_ON_GET = True # 중간 로그인 페이지 건너 뛰기 여부 
 ACCOUNT_LOGOUT_ON_GET = True 
 
+SITE_ID = 1
+
+
+SOCIALACCOUNT_PROVIDERS = {
+    'naver': {
+        'APP': {
+            'client_id': 'Etv6IXLgKpXnUM2scaQT',
+            'secret': 'mvXEzAf_CR',
+            'key': ''
+        }
+    },
+    'kakao': {
+        'APP': {
+            'client_id': '카카오 REST API 키',
+            'secret': '카카오 Secret Key',
+            'key': ''
+        }
+    }
+}
