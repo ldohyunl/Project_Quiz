@@ -1,0 +1,168 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Speak - 메인 페이지</title>
+    
+    <!-- Pretendard 폰트 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+
+    <!-- 스타일시트 -->
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="{% static 'main_page/style.css' %}">  <!-- CSS 연결 -->
+</head>
+<body>
+    <!--
+    
+    <header class="site-header">
+        <nav class="nav-container">
+            <div class="logo-area">
+                <a href="#" class="logo">Speak</a>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="{% url 'account_login' %}">로그인</a></li>
+            </ul>
+        </nav>
+    </header>
+    -->
+        <!-- 헤더 -->
+    <header class="site-header">
+        <nav class="nav-container">
+            <div class="logo-area">
+                <a href="#" class="logo">Speak</a>
+            </div>
+            <ul class="nav-menu">
+                {% if user.is_authenticated %}
+                    <!-- 로그인 상태일 때 유저 이름과 로그아웃 버튼 표시 -->
+                    <li>안녕하세요, {{ user.username }}님</li>
+                    <li><a href="{% url 'account_logout' %}">로그아웃</a></li>
+                {% else %}
+                    <!-- 로그인 상태가 아닐 때 로그인 버튼 표시 -->
+                    <li><a href="{% url 'account_login' %}">로그인</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Hero 섹션 -->
+    <section class="hero-section">
+        <div class="hero-inner">
+            <div class="hero-text">
+                <h1>AI와 함께 효율적인 학습을 시작하세요</h1>
+                <p>문서를 업로드하고 자동으로 생성되는<br>다양한 문제를 확인해보세요!</p>
+                <button class="hero-btn">시작하기</button>
+            </div>
+            <div class=hero-image></div>
+        </div>
+        
+
+    </section>
+
+    <!-- 파일 업로드 및 문제 유형 탭 -->
+    <section class="upload-and-tabs">
+        <div class="section-title">
+            <h2>학습 자료 업로드</h2>
+            <p>업로드한 자료로 다양한 유형의 문제를 생성할 수 있습니다.</p>
+        </div>
+
+        <div class="content-container">
+            <!-- 파일 업로드 카드 -->
+            <div class="card card-upload">
+                <div class="upload-container">
+                    <div class="file-drop-area">
+                        <span class="file-message">파일을 드래그하거나 클릭하여 업로드</span>
+                        <input type="file" multiple class="file-input">
+                    </div>
+                    <ul class="uploaded-files">
+                        <li>예시파일1.pdf (2MB)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 문제 유형 탭 -->
+            <div class="card card-tabs">
+                <div class="tabs-container">
+                    <!-- 탭 메뉴 -->
+                    <ul class="tab-menu">
+                        <li class="tab-item active" data-tab="multiple-choice">4지선다</li>
+                        <li class="tab-item" data-tab="ox">O/X</li>
+                        <li class="tab-item" data-tab="short-answer">단답형</li>
+                        <li class="tab-item" data-tab="history">기록</li>
+                    </ul>
+
+                    <!-- 탭 콘텐츠 -->
+                    <div class="tab-content">
+                        <!-- 4지선다 문제 -->
+                        <div class="tab-panel active" id="multiple-choice">
+                            <h3 class="tab-panel-title">4지선다 문제 예시</h3>
+                            <p class="tab-panel-desc">업로드된 파일 내용을 분석해 자동으로 생성된<br>4지선다 문제들을 확인할 수 있습니다.</p>
+                            <div class="question-box">
+                                <h4>Q1. 다음 중 자바스크립트 변수 선언 키워드는 무엇일까요?</h4>
+                                <ol>
+                                    <li>var</li>
+                                    <li>func</li>
+                                    <li>object</li>
+                                    <li>function</li>
+                                </ol>
+                            </div>
+                        </div>
+
+                        <!-- OX 문제 -->
+                        <div class="tab-panel" id="ox">
+                            <h3 class="tab-panel-title">O/X 문제 예시</h3>
+                            <p class="tab-panel-desc">업로드된 자료로 사실/거짓 여부를 평가하는 간단한 O/X 문제를 생성해보세요.</p>
+                            <div class="question-box">
+                                <h4>Q1. HTML은 프로그래밍 언어가 아니다. (O/X)</h4>
+                            </div>
+                        </div>
+
+                        <!-- 단답형 문제 -->
+                        <div class="tab-panel" id="short-answer">
+                            <h3 class="tab-panel-title">단답형 문제 예시</h3>
+                            <p class="tab-panel-desc">짧은 답으로 핵심 개념을 평가하는 문제 유형입니다.</p>
+                            <div class="question-box">
+                                <h4>Q1. CSS에서 클래스를 선택할 때 사용하는 심볼은 무엇인가요?</h4>
+                            </div>
+                        </div>
+
+                        <!-- 기록 -->
+                        <div class="tab-panel" id="history">
+                            <h3 class="tab-panel-title">기록</h3>
+                            <p class="tab-panel-desc">사용자가 풀었던 문제와 점수를 한눈에 확인할 수 있습니다.</p>
+                            <ul class="history-list">
+                                <li>2025-01-01 / 4지선다 / 점수 85점</li>
+                                <li>2025-01-02 / OX / 점수 90점</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 푸터 -->
+    <footer class="site-footer">
+        <div class="footer-container">
+            <p>© <span id="year"></span> Speak. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // 현재 연도 표시
+        document.getElementById("year").textContent = new Date().getFullYear();
+
+        // 탭 메뉴 기능
+        document.querySelectorAll(".tab-item").forEach((item) => {
+            item.addEventListener("click", () => {
+                // 모든 탭 비활성화
+                document.querySelectorAll(".tab-item, .tab-panel").forEach((el) => el.classList.remove("active"));
+
+                // 선택한 탭 활성화
+                item.classList.add("active");
+                document.getElementById(item.dataset.tab).classList.add("active");
+            });
+        });
+    </script>
+</body>
+</html>
