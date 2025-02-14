@@ -1,23 +1,75 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>파일 업로드 및 퀴즈 생성</title>
+    <title>퀴즈</title>
+
+    <!-- Static 파일 로드 -->
     {% load static %}
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+    <!-- CSS 파일을 추가하려면 여기서 로드 -->
+    <link rel="stylesheet" href="{% static 'quiz_app/example_html.css' %}">
 </head>
 <body>
-    <h1>파일 업로드 및 퀴즈 생성</h1>
+    <div class="quiz-container">
+        {% if current_question %}
+            <h1>{{ current_question.question }}</h1>
 
-    {% if quiz_text %}
-        <h2>생성된 퀴즈:</h2>
-        <pre>{{ quiz_text }}</pre>
-    {% endif %}
+            <div id="choices" class="choices">
+                {% for choice, text in current_question.choices.items %}
+                    <button class="choice-btn" data-choice="{{ choice }}">{{ text }}</button>
+                {% endfor %}
+            </div>
 
-    {% if error %}
-        <p style="color: red;">{{ error }}</p>
-    {% endif %}
+            <div id="result" class="result">
+                <p id="feedback"></p>
+                <button class="btn-next" onclick="nextQuestion()">다음 문제</button>
+            </div>
+
+        {% else %}
+            <h1>모든 문제가 끝났습니다!</h1>
+        {% endif %}
+    </div>
+
+    <script>
+        const correctAnswer = "{{ current_question.correct_answer }}";
+        let currentQuestionNumber = {{ current_question_number }};
+        let quizData = {{ quiz_data|safe }};
+
+        // 선택지 버튼 클릭 시 결과 처리
+        document.querySelectorAll('.choice-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const userChoice = this.getAttribute('data-choice');
+                const resultDiv = document.getElementById('result');
+                const feedback = document.getElementById('feedback');
+
+                // 답이 맞는지 확인
+                if (userChoice === correctAnswer) {
+                    feedback.textContent = "정답입니다!";
+                    feedback.style.color = 'green';
+                } else {
+                    feedback.textContent = "틀렸습니다!";
+                    feedback.style.color = 'red';
+                }
+
+                // 선택지 버튼 숨기기, 결과 보여주기
+                document.getElementById('choices').style.display = 'none';
+                resultDiv.style.display = 'block';
+            });
+        });
+
+        // 다음 문제로 넘어가기
+        function nextQuestion() {
+            currentQuestionNumber += 1;
+
+            // 다음 문제가 존재하면, URL로 질문 번호 전달
+            if (quizData[currentQuestionNumber]) {
+                window.location.href = '?question_number=' + currentQuestionNumber;
+            } else {
+                alert('퀴즈를 모두 끝냈습니다!');
+            }
+        }
+    </script>
 </body>
 </html>
-

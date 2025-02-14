@@ -22,12 +22,12 @@
         </div>
         <ul class="nav-menu">
             {% if user.is_authenticated %}
-                <!-- 로그인 상태일 때 유저 이름과 로그아웃 버튼 표시 -->
-                <li>안녕하세요, {{ user.username }}님</li>
-                <li><a href="{% url 'account_logout' %}">로그아웃</a></li>
+            <!-- 로그인 상태일 때 유저 이름과 로그아웃 버튼 표시 -->
+            <li>안녕하세요, {{ user.username }}님</li>
+            <li><a href="{% url 'account_logout' %}">로그아웃</a></li>
             {% else %}
-                <!-- 로그인 상태가 아닐 때 로그인 버튼 표시 -->
-                <li><a href="{% url 'account_login' %}">로그인</a></li>
+            <!-- 로그인 상태가 아닐 때 로그인 버튼 표시 -->
+            <li><a href="{% url 'account_login' %}">로그인</a></li>
             {% endif %}
         </ul>
     </nav>
@@ -55,61 +55,109 @@
     </div>
 
     <!-- 업로드 카드 -->
-   <div class="card card-upload">
-    <form method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        <div class="upload-container">
-            <div class="file-drop-area" id="fileDropArea">
-                <span class="file-message">파일을 드래그하거나 클릭하여 업로드</span>
-                <input type="file" multiple class="file-input" id="fileInput" name="file"/>
+    <div class="card card-upload">
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="upload-container">
+                <div class="file-drop-area" id="fileDropArea">
+                    <span class="file-message">파일을 드래그하거나 클릭하여 업로드</span>
+                    <input type="file" multiple class="file-input" id="fileInput" name="file"/>
+                </div>
+
+                <div class="file-name-area">
+                    <label for="fileName">파일 이름을 입력하세요:</label>
+                    <input type="text" id="fileName" name="file_name" placeholder="파일 이름"/>
+                </div>
+
+                <!-- 문제 유형 선택 버튼 -->
+                <div class="question-type-buttons">
+                    <button type="button" class="type-btn" data-type="MCQ">객관식</button>
+                    <button type="button" class="type-btn" data-type="OX">O/X</button>
+                    <button type="button" class="type-btn" data-type="Short">단답형</button>
+                </div>
+
+                <!-- 선택된 문제 유형을 저장할 hidden input -->
+                <input type="hidden" id="questionType" name="question_type" value="MCQ"/>
+
+                <ul class="uploaded-files" id="fileList">
+                    <!-- 업로드된 파일 리스트 -->
+                </ul>
+
+                <button type="submit">파일 업로드</button>
             </div>
-            <ul class="uploaded-files" id="fileList">
-                <!-- 여기에 업로드된 파일들이 동적으로 표시됩니다 -->
-            </ul>
-            <button type="submit">파일 업로드</button>
-        </div>
-    </form>
-</div>
+        </form>
+    </div>
 
-<script>
-    // 드래그 앤 드롭 기능 처리
-    const fileDropArea = document.getElementById('fileDropArea');
-    const fileInput = document.getElementById('fileInput');
-    const fileList = document.getElementById('fileList');
+    <script>
+        // 문제 유형 버튼 클릭 시 값 변경
+        const typeButtons = document.querySelectorAll(".type-btn");
+        const questionTypeInput = document.getElementById("questionType");
 
-    // 파일 선택 후 동적으로 파일 목록 추가
-    fileInput.addEventListener('change', function() {
-        displayFileList(fileInput.files);
-    });
+        typeButtons.forEach(button => {
+            button.addEventListener("click", function() {
+                // 모든 버튼에서 active 클래스 제거
+                typeButtons.forEach(btn => btn.classList.remove("active"));
 
-    // 드래그된 파일 처리
-    fileDropArea.addEventListener('dragover', function(e) {
-        e.preventDefault();
-        fileDropArea.classList.add('drag-over');
-    });
+                // 클릭한 버튼에 active 클래스 추가
+                this.classList.add("active");
 
-    fileDropArea.addEventListener('dragleave', function() {
-        fileDropArea.classList.remove('drag-over');
-    });
+                // hidden input 값 변경
+                questionTypeInput.value = this.getAttribute("data-type");
+            });
+        });
 
-    fileDropArea.addEventListener('drop', function(e) {
-        e.preventDefault();
-        fileDropArea.classList.remove('drag-over');
-        const files = e.dataTransfer.files;
-        fileInput.files = files;  // 파일 목록을 file input에 연결
-        displayFileList(files);    // 드래그된 파일 목록을 표시
-    });
+        // 파일 선택 시 파일 목록 표시
+        document.getElementById('fileInput').addEventListener('change', function(event) {
+            const fileList = document.getElementById("fileList");
+            fileList.innerHTML = '';
+            Array.from(event.target.files).forEach(file => {
+                const listItem = document.createElement("li");
+                listItem.textContent = `${file.name} (${(file.size / 1024).toFixed(2)}MB)`;
+                fileList.appendChild(listItem);
+            });
+        });
+    </script>
 
-    // 파일 목록을 표시하는 함수
-    function displayFileList(files) {
-        fileList.innerHTML = '';  // 기존 파일 목록 비우기
-        for (const file of files) {
-            const listItem = document.createElement('li');
-            listItem.textContent = file.name;  // 파일 이름 표시
-            fileList.appendChild(listItem);
+    <script>
+        // 드래그 앤 드롭 기능 처리
+        const fileDropArea = document.getElementById('fileDropArea');
+        const fileInput = document.getElementById('fileInput');
+        const fileList = document.getElementById('fileList');
+
+        // 파일 선택 후 동적으로 파일 목록 추가
+        fileInput.addEventListener('change', function() {
+            displayFileList(fileInput.files);
+        });
+
+        // 드래그된 파일 처리
+        fileDropArea.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            fileDropArea.classList.add('drag-over');
+        });
+
+        fileDropArea.addEventListener('dragleave', function() {
+            fileDropArea.classList.remove('drag-over');
+        });
+
+        fileDropArea.addEventListener('drop', function(e) {
+            e.preventDefault();
+            fileDropArea.classList.remove('drag-over');
+            const files = e.dataTransfer.files;
+            fileInput.files = files;  // 파일 목록을 file input에 연결
+            displayFileList(files);    // 드래그된 파일 목록을 표시
+        });
+
+        // 파일 목록을 표시하는 함수
+        function displayFileList(files) {
+            fileList.innerHTML = '';  // 기존 파일 목록 비우기
+            for (const file of files) {
+                const listItem = document.createElement('li');
+                listItem.textContent = file.name;  // 파일 이름 표시
+                fileList.appendChild(listItem);
+            }
         }
-    }
-</script>
+    </script>
+
 
     <!-- 탭 카드 -->
     <div class="card card-tabs">
@@ -145,45 +193,46 @@
                             <button class="generate-btn">문제 생성</button>
                         </a>
                     </div>
+                </div>
 
-                    <!-- OX -->
-                    <div class="tab-panel" id="ox">
-                        <h3 class="tab-panel-title">O/X 문제 예시</h3>
-                        <p class="tab-panel-desc">
-                            업로드된 자료로 사실/거짓 여부를 평가하는<br/>
-                            간단한 O/X 문제를 생성해보세요.
-                        </p>
-                        <div class="question-box">
-                            <h4>Q1. HTML은 프로그래밍 언어가 아니다. (O/X)</h4>
-                        </div>
+                <!-- OX -->
+                <div class="tab-panel" id="ox">
+                    <h3 class="tab-panel-title">O/X 문제 예시</h3>
+                    <p class="tab-panel-desc">
+                        업로드된 자료로 사실/거짓 여부를 평가하는<br/>
+                        간단한 O/X 문제를 생성해보세요.
+                    </p>
+                    <div class="question-box">
+                        <h4>Q1. HTML은 프로그래밍 언어가 아니다. (O/X)</h4>
                     </div>
+                </div>
 
-                    <!-- 단답형 -->
-                    <div class="tab-panel" id="short-answer">
-                        <h3 class="tab-panel-title">단답형 문제 예시</h3>
-                        <p class="tab-panel-desc">
-                            짧은 답으로 핵심 개념을 평가하는 문제 유형입니다.
-                        </p>
-                        <div class="question-box">
-                            <h4>Q1. CSS에서 클래스를 선택할 때 사용하는 심볼은 무엇인가요?</h4>
-                        </div>
+                <!-- 단답형 -->
+                <div class="tab-panel" id="short-answer">
+                    <h3 class="tab-panel-title">단답형 문제 예시</h3>
+                    <p class="tab-panel-desc">
+                        짧은 답으로 핵심 개념을 평가하는 문제 유형입니다.
+                    </p>
+                    <div class="question-box">
+                        <h4>Q1. CSS에서 클래스를 선택할 때 사용하는 심볼은 무엇인가요?</h4>
                     </div>
+                </div>
 
-                    <!-- 기록(History) -->
-                    <div class="tab-panel" id="history">
-                        <h3 class="tab-panel-title">기록</h3>
-                        <p class="tab-panel-desc">
-                            사용자가 풀었던 문제와 점수를 한눈에 확인할 수 있습니다.
-                        </p>
-                        <ul class="history-list">
-                            <li>2025-01-01 / 4지선다 / 점수 85점</li>
-                            <li>2025-01-02 / OX / 점수 90점</li>
-                        </ul>
-                    </div>
+                <!-- 기록(History) -->
+                <div class="tab-panel" id="history">
+                    <h3 class="tab-panel-title">기록</h3>
+                    <p class="tab-panel-desc">
+                        사용자가 풀었던 문제와 점수를 한눈에 확인할 수 있습니다.
+                    </p>
+                    <ul class="history-list">
+                        <li>2025-01-01 / 4지선다 / 점수 85점</li>
+                        <li>2025-01-02 / OX / 점수 90점</li>
+                    </ul>
                 </div>
             </div>
         </div>
-</section>
+    </div> <!-- 이 부분이 문제를 해결한 지점입니다. -->
+</section> <!-- 이 닫는 태그는 적절하게 닫혀있습니다. -->
 
 <!-- 푸터 -->
 <footer class="site-footer">

@@ -104,7 +104,7 @@ DATABASES = {
         "ENGINE": "django.db.backends.mysql",  # MySQL 엔진 사용
         "NAME": "project_quiz_db3",  # 공유할 데이터베이스 이름
         "USER": "root",  # DB 사용자명
-        "PASSWORD": "0000sql",  # DB 비밀번호
+        "PASSWORD": "hwoa13b78alvin!",  # DB 비밀번호
         "HOST": "127.0.0.1",  # 로컬 호스트
         "PORT": "3306",  # MySQL 기본 포트
     }

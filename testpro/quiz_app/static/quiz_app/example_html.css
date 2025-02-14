@@ -1,0 +1,126 @@
+/* -------------------------------------
+   CSS 변수 (메인 컬러 #f49303)
+-------------------------------------- */
+:root {
+    --main-color: #f49303;
+    --main-color-dark: #d67d02;
+    --bg-color: #f8f9fa; /* 조금 더 밝은 그레이 톤 */
+    --text-color: #333;
+    --font-family: 'Pretendard', sans-serif;
+    --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* 기본 리셋 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-family);
+    color: var(--text-color);
+    background-color: var(--bg-color);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* -------------------------------------
+   퀴즈 페이지 스타일
+-------------------------------------- */
+h1 {
+    text-align: center;
+    color: var(--text-color);
+    margin-top: 30px;
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.quiz-container {
+    max-width: 800px;
+    margin: 30px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: var(--box-shadow);
+}
+
+.choices {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.choice-btn {
+    background-color: var(--main-color);
+    color: white;
+    border: none;
+    padding: 15px;
+    font-size: 18px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 100%;
+    text-align: center;
+}
+
+.choice-btn:hover {
+    background-color: var(--main-color-dark);
+}
+
+#result {
+    display: none;
+    text-align: center;
+    margin-top: 30px;
+}
+
+#result p {
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.result.correct {
+    color: green;
+}
+
+.result.incorrect {
+    color: red;
+}
+
+.btn-next {
+    background-color: #008CBA;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-next:hover {
+    background-color: #007B9E;
+}
+
+.quiz-container button:focus {
+    outline: none;
+}
+
+/* 반응형 스타일 */
+@media (max-width: 600px) {
+    .choice-btn {
+        font-size: 16px;
+        padding: 12px;
+    }
+
+    h1 {
+        font-size: 1.5rem;
+    }
+
+    .btn-next {
+        font-size: 14px;
+        padding: 8px 16px;
+    }
+}
