@@ -5,9 +5,11 @@
   <meta charset="UTF-8" />
   <title>객관식 4지선다 - 예시</title>
   <!-- 스타일 시트 링크 추가 -->
-    <link rel="stylesheet" href="{% static 'quiz_app/example_html.css' %}?v=1">
+  <link rel="stylesheet" href="{% static 'quiz_app/example_html.css' %}?v=1">
 </head>
 <body>
+  <!-- quiz_data를 JSON 스크립트로 안전하게 출력 -->
+  {{ quiz_data|json_script:"quiz-data" }}
 
   <!-- (1) 실제 문제풀이 퀴즈 화면 -->
   <div class="quiz-wrapper" id="quizWrapper">
@@ -59,161 +61,192 @@
     <button class="quiz-complete-restart-btn" id="createNewQuizBtn">새로운 퀴즈 생성</button>
   </div>
 
-<script>
-// B-1에서 quiz_data는 Django에서 전달된 JSON 형태의 퀴즈 데이터
-const quizData = {{ quiz_data|safe }}; // Django에서 전달된 quiz_data를 사용
+  <script>
+    // json_script로 전달된 데이터를 파싱하여 quizData 변수에 저장
+    const quizData = JSON.parse(document.getElementById("quiz-data").textContent);
+    const labels = ["A", "B", "C", "D"];
+    let currentQuestionIndex = 0;
+    let userAnswer = null;
+    let isConfirmed = false;
+    const totalQuestions = quizData.length;
+    console.log("Loaded quizData:", quizData);
 
-const labels = ["A", "B", "C", "D"];
-let currentQuestionIndex = 0;
-let userAnswer = null;
-let isConfirmed = false;
-const totalQuestions = quizData.length;
+    // DOM 요소
+    const quizWrapper = document.getElementById("quizWrapper");
+    const quizCompleteWrapper = document.getElementById("quizCompleteWrapper");
 
-// DOM
-const quizWrapper = document.getElementById("quizWrapper");
-const quizCompleteWrapper = document.getElementById("quizCompleteWrapper");
+    const questionCountText = document.getElementById("questionCountText");
+    const progressFill = document.getElementById("progressFill");
+    const questionNumberEl = document.getElementById("questionNumber");
+    const questionTextEl = document.getElementById("questionText");
+    const choicesListEl = document.getElementById("choicesList");
+    const confirmBtn = document.getElementById("confirmBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const resultBar = document.getElementById("resultBar");
+    const resultText = document.getElementById("resultText");
 
-const questionCountText = document.getElementById("questionCountText");
-const progressFill = document.getElementById("progressFill");
-const questionNumberEl = document.getElementById("questionNumber");
-const questionTextEl = document.getElementById("questionText");
-const choicesListEl = document.getElementById("choicesList");
-const confirmBtn = document.getElementById("confirmBtn");
-const nextBtn = document.getElementById("nextBtn");
-const resultBar = document.getElementById("resultBar");
-const resultText = document.getElementById("resultText");
+    const finalScoreEl = document.getElementById("finalScore"); // 완료화면 점수
+    const createNewQuizBtn = document.getElementById("createNewQuizBtn");
+    const btnRestart = document.getElementById("btnRestart");
+    const btnShare = document.getElementById("btnShare");
+    const btnEmbed = document.getElementById("btnEmbed");
 
-const finalScoreEl = document.getElementById("finalScore"); // 완료화면 점수
-const createNewQuizBtn = document.getElementById("createNewQuizBtn");
-const btnRestart = document.getElementById("btnRestart");
-/** 원하는 경우 공유/임베드 등 기능은 따로 구현 */
-const btnShare = document.getElementById("btnShare");
-const btnEmbed = document.getElementById("btnEmbed");
+    // 정답 맞힌 개수 추적
+    let correctCount = 0;
 
-// 정답 맞힌 개수 추적
-let correctCount = 0;
+    // 페이지 로드 후 첫 문제 호출
+    loadQuestion();
 
-// 페이지 로드 후 첫 문제
-loadQuestion();
+    /** 문제 로드 함수 */
+    function loadQuestion() {
+      updateProgressBar();
+      questionCountText.textContent = `${currentQuestionIndex + 1}/${totalQuestions}`;
 
-/** 문제 로드 함수 */
-function loadQuestion() {
-  updateProgressBar();
-  questionCountText.textContent = `${currentQuestionIndex + 1}/${totalQuestions}`;
+      // 초기 상태 설정
+      isConfirmed = false;
+      userAnswer = null;
+      confirmBtn.style.display = "inline-block";
+      nextBtn.style.display = "none";
+      resultBar.className = "result-bar";
+      resultText.innerHTML = "";
 
-  // 초기 상태
-  isConfirmed = false;
-  userAnswer = null;
-  confirmBtn.style.display = "inline-block";
-  nextBtn.style.display = "none";
-  resultBar.className = "result-bar";
-  resultText.innerHTML = "";
+      const q = quizData[currentQuestionIndex];
+      questionNumberEl.textContent = `문제 ${currentQuestionIndex + 1}`;
+      questionTextEl.textContent = q.text;
 
-  const q = quizData[currentQuestionIndex];
-  questionNumberEl.textContent = `문제 ${currentQuestionIndex + 1}`;
-  questionTextEl.textContent = q.text;
+      // 선택지 리스트 초기화 및 추가
+      choicesListEl.innerHTML = "";
+      q.options.forEach((opt, idx) => {
+        const li = document.createElement("li");
+        li.className = "choice-item";
+        li.dataset.index = idx;
 
-  // 선택지 리스트
-  choicesListEl.innerHTML = "";
-  q.options.forEach((opt, idx) => {
-    const li = document.createElement("li");
-    li.className = "choice-item";
-    li.dataset.index = idx;
+        const spanText = document.createElement("span");
+        spanText.className = "choice-text";
+        spanText.textContent = opt;
 
-    const spanText = document.createElement("span");
-    spanText.className = "choice-text";
-    spanText.textContent = opt;
+        const labelSpan = document.createElement("span");
+        labelSpan.className = "choice-label";
+        labelSpan.textContent = labels[idx] || "";
 
-    const labelSpan = document.createElement("span");
-    labelSpan.className = "choice-label";
-    labelSpan.textContent = labels[idx] || "";
+        li.appendChild(spanText);
+        li.appendChild(labelSpan);
 
-    li.appendChild(spanText);
-    li.appendChild(labelSpan);
+        // 선택 이벤트 등록
+        li.addEventListener("click", () => {
+          if (isConfirmed) return;
+          selectChoice(idx);
+        });
 
-    // 선택 이벤트
-    li.addEventListener("click", () => {
+        choicesListEl.appendChild(li);
+      });
+    }
+
+    /** 선택지 클릭 처리 함수 */
+    function selectChoice(idx) {
+      userAnswer = idx;
+      document.querySelectorAll(".choice-item").forEach(item => {
+        item.classList.remove("selected");
+      });
+      const selectedEl = document.querySelector(`.choice-item[data-index='${idx}']`);
+      if (selectedEl) {
+        selectedEl.classList.add("selected");
+      }
+    }
+
+    /** “확인” 버튼 클릭 처리 */
+    confirmBtn.addEventListener("click", () => {
+      if (userAnswer === null) {
+        alert("답안을 선택해주세요!");
+        return;
+      }
       if (isConfirmed) return;
-      selectChoice(idx);
+      isConfirmed = true;
+
+      const q = quizData[currentQuestionIndex];
+      const correctIndex = q.correctIndex;
+      const selectedEl = document.querySelector(`.choice-item[data-index='${userAnswer}']`);
+      const correctEl = document.querySelector(`.choice-item[data-index='${correctIndex}']`);
+
+      // 정오답 처리
+      if (userAnswer === correctIndex) {
+        selectedEl.classList.remove("selected");
+        selectedEl.classList.add("correct");
+        correctCount++;
+        showResultBar(true);
+      } else {
+        selectedEl.classList.remove("selected");
+        selectedEl.classList.add("wrong");
+        correctEl.classList.add("correct");
+        showResultBar(false);
+      }
+
+      // “확인” 버튼 숨기고 “계속” 버튼 표시
+      confirmBtn.style.display = "none";
+      nextBtn.style.display = "inline-block";
     });
 
-    choicesListEl.appendChild(li);
-  });
-}
+    /** “계속” 버튼 클릭 처리 */
+    nextBtn.addEventListener("click", () => {
+      currentQuestionIndex++;
+      if (currentQuestionIndex >= totalQuestions) {
+        showQuizComplete();
+        return;
+      }
+      loadQuestion();
+    });
 
-/** 선택지 클릭 */
-function selectChoice(idx) {
-  userAnswer = idx;
-  document.querySelectorAll(".choice-item").forEach(item => {
-    item.classList.remove("selected");
-  });
-  const selectedEl = document.querySelector(`.choice-item[data-index='${idx}']`);
-  if (selectedEl) {
-    selectedEl.classList.add("selected");
-  }
-}
+    /** 진행률 업데이트 함수 */
+    function updateProgressBar() {
+      const progress = ((currentQuestionIndex + 1) / totalQuestions) * 100;
+      progressFill.style.width = `${progress}%`;
+    }
 
-/** “확인” 버튼 */
-confirmBtn.addEventListener("click", () => {
-  if (userAnswer === null) {
-    alert("답안을 선택해주세요!");
-    return;
-  }
-  if (isConfirmed) return;
-  isConfirmed = true;
+    /** 정답/오답 결과 표시 함수 */
+    function showResultBar(isCorrect) {
+      resultBar.classList.add(isCorrect ? "correct-answer" : "wrong-answer");
+      resultText.textContent = isCorrect ? "정답!" : "오답!";
+    }
 
-  const q = quizData[currentQuestionIndex];
-  const correctIndex = q.correctIndex;
-  const selectedEl = document.querySelector(`.choice-item[data-index='${userAnswer}']`);
-  const correctEl = document.querySelector(`.choice-item[data-index='${correctIndex}']`);
+    /** 퀴즈 완료 화면 표시 함수 */
+    function showQuizComplete() {
+      quizWrapper.style.display = "none";
+      quizCompleteWrapper.style.display = "block";
+      finalScoreEl.textContent = `${correctCount}/${totalQuestions}`;
+    }
+  </script>
 
-  // 정오답
-  if (userAnswer === correctIndex) {
-    selectedEl.classList.remove("selected");
-    selectedEl.classList.add("correct");
-    correctCount++; // 정답이면 correctCount 증가
-    showResultBar(true);
-  } else {
-    selectedEl.classList.remove("selected");
-    selectedEl.classList.add("wrong");
-    correctEl.classList.add("correct");
-    showResultBar(false);
-  }
+  <!-- 로그아웃 처리 스크립트 -->
+  <script>
+    function logoutUser() {
+      fetch("/accounts/logout/", {
+          method: "POST",
+          headers: {
+              "X-CSRFToken": getCookie("csrftoken"),
+              "Content-Type": "application/x-www-form-urlencoded"
+          },
+          credentials: "same-origin"
+      }).then(response => {
+          window.location.href = "/"; // 로그아웃 후 메인 페이지로 이동
+      });
+      return false;  // a 태그 기본 동작 방지
+    }
 
-  // “확인” 숨기고 “계속” 보이기
-  confirmBtn.style.display = "none";
-  nextBtn.style.display = "inline-block";
-});
-
-/** “계속” 버튼 */
-nextBtn.addEventListener("click", () => {
-  currentQuestionIndex++;
-  if (currentQuestionIndex >= totalQuestions) {
-    // 모든 문제를 풀었다면 → 완료 화면으로
-    showQuizComplete();
-    return;
-  }
-  loadQuestion();
-});
-
-/** 진행률 업데이트 함수 */
-function updateProgressBar() {
-  const progress = ((currentQuestionIndex + 1) / totalQuestions) * 100;
-  progressFill.style.width = `${progress}%`;
-}
-
-/** 정답/오답 바 표시 함수 */
-function showResultBar(isCorrect) {
-  resultBar.classList.add(isCorrect ? "correct-answer" : "wrong-answer");
-  resultText.textContent = isCorrect ? "정답!" : "오답!";
-}
-
-/** 퀴즈 완료 화면 */
-function showQuizComplete() {
-  quizWrapper.style.display = "none";
-  quizCompleteWrapper.style.display = "block";
-  finalScoreEl.textContent = `${correctCount}/${totalQuestions}`;
-}
-</script>
+    // CSRF 토큰 가져오는 함수
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== "") {
+          let cookies = document.cookie.split(";");
+          for (let i = 0; i < cookies.length; i++) {
+              let cookie = cookies[i].trim();
+              if (cookie.substring(0, name.length + 1) === (name + "=")) {
+                  cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                  break;
+              }
+          }
+      }
+      return cookieValue;
+    }
+  </script>
 </body>
 </html>
