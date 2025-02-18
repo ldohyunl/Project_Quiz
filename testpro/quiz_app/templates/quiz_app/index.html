@@ -1,278 +1,299 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="ko">
 <head>
-    <meta charset="UTF-8"/>
-    <title>Speak - 메인 페이지</title>
-
-    <!-- static 태그 로드 -->
-    {% load static %}
-
-    <!-- Pretendard CDN 추가 -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css"/>
-
-    <!-- 기존 styles.css (static 폴더 안에 quiz_app/styles.css 파일이 있다고 가정) -->
-    <link rel="stylesheet" href="{% static 'quiz_app/styles.css' %}"/>
+  <meta charset="UTF-8" />
+  <title>Quizly - 메인 페이지</title>
+  <!-- Pretendard 폰트 CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" />
+  <!-- 페이지 전용 CSS -->
+  <link rel="stylesheet" href="{% static 'quiz_app/styles.css' %}" />
 </head>
 <body>
-<!-- 헤더 -->
-<header class="site-header">
+  <!-- 사이트 헤더 -->
+  <header class="site-header">
     <nav class="nav-container">
-        <div class="logo-area">
-            <a href="#" class="logo">Speak</a>
-        </div>
-        <ul class="nav-menu">
-            {% if user.is_authenticated %}
-            <!-- 로그인 상태일 때 유저 이름과 로그아웃 버튼 표시 -->
-            <li>안녕하세요, {{ user.username }}님</li>
-            <li><a href="{% url 'account_logout' %}">로그아웃</a></li>
-            {% else %}
-            <!-- 로그인 상태가 아닐 때 로그인 버튼 표시 -->
-            <li><a href="{% url 'account_login' %}">로그인</a></li>
-            {% endif %}
-        </ul>
+      <div class="logo-area">
+        <a href="#" class="logo">Quizly</a>
+      </div>
+      <ul class="nav-menu">
+        <li><a href="login.html">로그인</a></li>
+      </ul>
     </nav>
-</header>
+  </header>
 
-<!-- Hero Section -->
-<section class="hero-section">
-    <div class="hero-inner">
-        <div class="hero-text">
-            <h1>AI와 함께 효율적인 학습을 시작하세요</h1>
-            <p>문서를 업로드하고 자동으로 생성되는<br/>다양한 문제를 확인해보세요!</p>
-            <button class="hero-btn">시작하기</button>
-        </div>
-        <div class="hero-image">
-            <!-- 필요하면 이미지 삽입 -->
-        </div>
+  <!-- 메인 소개 섹션 -->
+  <section class="main-section">
+    <div class="main-inner">
+      <div class="main-text">
+        <h1>AI와 함께 효율적인 학습을 시작하세요</h1>
+        <p>문서를 업로드하고 자동으로 생성되는<br>다양한 문제를 확인해보세요!</p>
+        <button type="button" class="main-btn">시작하기</button>
+      </div>
+      <div class="main-image"></div>
     </div>
-</section>
+  </section>
 
-<!-- Section2: 파일 업로드 + 탭 메뉴 -->
-<section class="upload-and-tabs">
+  <!-- 업로드 및 문제 유형 선택 섹션 -->
+  <section class="upload-and-tabs">
     <div class="section-title">
-        <h2>학습 자료 업로드</h2>
-        <p>업로드한 자료로 다양한 유형의 문제를 생성할 수 있습니다.</p>
+      <h2>학습 자료 업로드</h2>
+      <p>업로드한 자료로 다양한 유형의 문제를 생성할 수 있습니다.</p>
     </div>
 
-    <!-- 업로드 카드 -->
-    <div class="card card-upload">
-        <form method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
-            <div class="upload-container">
-                <div class="file-drop-area" id="fileDropArea">
-                    <span class="file-message">파일을 드래그하거나 클릭하여 업로드</span>
-                    <input type="file" multiple class="file-input" id="fileInput" name="file"/>
-                </div>
+    <!-- 전체를 감싸는 폼 -->
+    <form id="uploadForm" method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+      <!-- 파일 업로드 카드 -->
+      <div class="card card-upload">
+        <div class="upload-container">
+          <!-- 과목명 표시 (초기 상태 placeholder) -->
+          <div class="subject-heading placeholder" id="subjectHeading">파일명</div>
 
-                <div class="file-name-area">
-                    <label for="fileName">파일 이름을 입력하세요:</label>
-                    <input type="text" id="fileName" name="file_name" placeholder="파일 이름"/>
-                </div>
+          <!-- 파일 드래그 앤 드롭 영역 -->
+          <div class="file-drop-area" id="fileDropArea">
+            <span class="file-message">파일을 드래그하거나 클릭하여 업로드</span>
+            <!-- form의 file 필드 (이름은 "file") -->
+            <input type="file" name="file" multiple class="file-input" required />
+          </div>
 
-                <!-- 문제 유형 선택 버튼 -->
-                <div class="question-type-buttons">
-                    <button type="button" class="type-btn" data-type="MCQ">객관식</button>
-                    <button type="button" class="type-btn" data-type="OX">O/X</button>
-                    <button type="button" class="type-btn" data-type="Short">단답형</button>
-                </div>
+          <!-- 업로드된 파일 목록 -->
+          <ul class="uploaded-files">
+            <li class="default-msg">.pdf / .docx 등 파일을 업로드하세요</li>
+          </ul>
 
-                <!-- 선택된 문제 유형을 저장할 hidden input -->
-                <input type="hidden" id="questionType" name="question_type" value="MCQ"/>
-
-                <ul class="uploaded-files" id="fileList">
-                    <!-- 업로드된 파일 리스트 -->
-                </ul>
-
-                <button type="submit">파일 업로드</button>
-            </div>
-        </form>
-    </div>
-
-    <script>
-        // 문제 유형 버튼 클릭 시 값 변경
-        const typeButtons = document.querySelectorAll(".type-btn");
-        const questionTypeInput = document.getElementById("questionType");
-
-        typeButtons.forEach(button => {
-            button.addEventListener("click", function() {
-                // 모든 버튼에서 active 클래스 제거
-                typeButtons.forEach(btn => btn.classList.remove("active"));
-
-                // 클릭한 버튼에 active 클래스 추가
-                this.classList.add("active");
-
-                // hidden input 값 변경
-                questionTypeInput.value = this.getAttribute("data-type");
-            });
-        });
-
-        // 파일 선택 시 파일 목록 표시
-        document.getElementById('fileInput').addEventListener('change', function(event) {
-            const fileList = document.getElementById("fileList");
-            fileList.innerHTML = '';
-            Array.from(event.target.files).forEach(file => {
-                const listItem = document.createElement("li");
-                listItem.textContent = `${file.name} (${(file.size / 1024).toFixed(2)}MB)`;
-                fileList.appendChild(listItem);
-            });
-        });
-    </script>
-
-    <script>
-        // 드래그 앤 드롭 기능 처리
-        const fileDropArea = document.getElementById('fileDropArea');
-        const fileInput = document.getElementById('fileInput');
-        const fileList = document.getElementById('fileList');
-
-        // 파일 선택 후 동적으로 파일 목록 추가
-        fileInput.addEventListener('change', function() {
-            displayFileList(fileInput.files);
-        });
-
-        // 드래그된 파일 처리
-        fileDropArea.addEventListener('dragover', function(e) {
-            e.preventDefault();
-            fileDropArea.classList.add('drag-over');
-        });
-
-        fileDropArea.addEventListener('dragleave', function() {
-            fileDropArea.classList.remove('drag-over');
-        });
-
-        fileDropArea.addEventListener('drop', function(e) {
-            e.preventDefault();
-            fileDropArea.classList.remove('drag-over');
-            const files = e.dataTransfer.files;
-            fileInput.files = files;  // 파일 목록을 file input에 연결
-            displayFileList(files);    // 드래그된 파일 목록을 표시
-        });
-
-        // 파일 목록을 표시하는 함수
-        function displayFileList(files) {
-            fileList.innerHTML = '';  // 기존 파일 목록 비우기
-            for (const file of files) {
-                const listItem = document.createElement('li');
-                listItem.textContent = file.name;  // 파일 이름 표시
-                fileList.appendChild(listItem);
-            }
-        }
-    </script>
-
-
-    <!-- 탭 카드 -->
-    <div class="card card-tabs">
-        <div class="tabs-container">
-            <ul class="tab-menu">
-                <li class="tab-item active" data-tab="multiple-choice">4지선다</li>
-                <li class="tab-item" data-tab="ox">O/X</li>
-                <li class="tab-item" data-tab="short-answer">단답형</li>
-                <li class="tab-item" data-tab="history">기록</li>
-            </ul>
-
-            <div class="tab-content">
-                <!-- 4지선다 -->
-                <div class="tab-panel active" id="multiple-choice">
-                    <h3 class="tab-panel-title">4지선다 문제 예시</h3>
-                    <p class="tab-panel-desc">
-                        업로드된 파일 내용을 분석해 자동으로 생성된<br/>
-                        4지선다 문제들을 확인할 수 있습니다.
-                    </p>
-                    <div class="question-box">
-                        <h4>Q1. 다음 중 자바스크립트 변수 선언 키워드는 무엇일까요?</h4>
-                        <ol>
-                            <li>var</li>
-                            <li>func</li>
-                            <li>object</li>
-                            <li>function</li>
-                        </ol>
-                    </div>
-
-                    <!-- 문제 생성 버튼 (오른쪽 정렬) -->
-                    <div class="button-container" style="text-align: right;">
-                        <a href="{% url 'example' %}">
-                            <button class="generate-btn">문제 생성</button>
-                        </a>
-                    </div>
-                </div>
-
-                <!-- OX -->
-                <div class="tab-panel" id="ox">
-                    <h3 class="tab-panel-title">O/X 문제 예시</h3>
-                    <p class="tab-panel-desc">
-                        업로드된 자료로 사실/거짓 여부를 평가하는<br/>
-                        간단한 O/X 문제를 생성해보세요.
-                    </p>
-                    <div class="question-box">
-                        <h4>Q1. HTML은 프로그래밍 언어가 아니다. (O/X)</h4>
-                    </div>
-                </div>
-
-                <!-- 단답형 -->
-                <div class="tab-panel" id="short-answer">
-                    <h3 class="tab-panel-title">단답형 문제 예시</h3>
-                    <p class="tab-panel-desc">
-                        짧은 답으로 핵심 개념을 평가하는 문제 유형입니다.
-                    </p>
-                    <div class="question-box">
-                        <h4>Q1. CSS에서 클래스를 선택할 때 사용하는 심볼은 무엇인가요?</h4>
-                    </div>
-                </div>
-
-                <!-- 기록(History) -->
-                <div class="tab-panel" id="history">
-                    <h3 class="tab-panel-title">기록</h3>
-                    <p class="tab-panel-desc">
-                        사용자가 풀었던 문제와 점수를 한눈에 확인할 수 있습니다.
-                    </p>
-                    <ul class="history-list">
-                        <li>2025-01-01 / 4지선다 / 점수 85점</li>
-                        <li>2025-01-02 / OX / 점수 90점</li>
-                    </ul>
-                </div>
-            </div>
+          <!-- 과목명 입력 및 완료 버튼 -->
+          <div class="subject-input-container">
+            <!-- form의 file_name 필드 (이름은 "file_name") -->
+            <input type="text" name="file_name" class="subject-input" placeholder="파일명을 입력하세요" />
+            <!-- 여기서는 입력값을 지우지 않고 유지 -->
+            <button type="button" class="subject-submit-btn" id="subjectSubmitBtn">완료</button>
+          </div>
         </div>
-    </div> <!-- 이 부분이 문제를 해결한 지점입니다. -->
-</section> <!-- 이 닫는 태그는 적절하게 닫혀있습니다. -->
+      </div>
 
-<!-- 푸터 -->
-<footer class="site-footer">
+      <!-- 숨은 필드: 문제 유형 (Django 폼의 question_type 필드와 이름 일치) -->
+      <input type="hidden" name="question_type" id="questionTypeInput" value="MCQ" />
+
+      <!-- 문제 유형 선택 섹션 -->
+
+      <section class="question-type-section">
+        <div class="question-type-container">
+          <!-- 객관식 문제 유형 카드 -->
+          <div class="question-type-card" data-type="MCQ">
+            <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <g filter="url(#filter0_ii_190_52)">
+                <circle cx="30" cy="30" r="30" fill="#F8F9FA" />
+              </g>
+              <g filter="url(#filter1_d_190_52)">
+                <rect x="15" y="15" width="30" height="30" rx="6" fill="white" />
+              </g>
+              <circle cx="21" cy="39" r="2" fill="#F2F3F5" />
+              <circle cx="21" cy="33" r="2" fill="#F2F3F5" />
+              <circle cx="21" cy="27" r="2" fill="#F49303" />
+              <circle cx="21" cy="21" r="2" fill="#F2F3F5" />
+              <rect x="25" y="37" width="16" height="4" rx="2" fill="#F2F3F5" />
+              <rect x="25" y="31" width="16" height="4" rx="2" fill="#F2F3F5" />
+              <rect x="25" y="25" width="16" height="4" rx="2" fill="#F49303" />
+              <rect x="25" y="19" width="16" height="4" rx="2" fill="#F2F3F5" />
+              <defs>
+                <filter id="filter0_ii_190_52" x="-0.5" y="-0.5" width="62" height="62" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                  <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                  <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+                  <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha" />
+                  <feMorphology radius="2" operator="erode" in="SourceAlpha" result="effect1_innerShadow_190_52" />
+                  <feOffset dx="1.5" dy="1.5" />
+                  <feGaussianBlur stdDeviation="1" />
+                  <feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1" />
+                  <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.1 0" />
+                  <feBlend mode="normal" in2="shape" result="effect1_innerShadow_190_52" />
+                  <feMorphology radius="3" operator="erode" in="SourceAlpha" result="effect2_innerShadow_190_52" />
+                  <feOffset dx="-0.5" dy="-0.5" />
+                  <feGaussianBlur stdDeviation="1" />
+                  <feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1" />
+                  <feColorMatrix type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0" />
+                  <feBlend mode="normal" in2="effect1_innerShadow_190_52" result="effect2_innerShadow_190_52" />
+                </filter>
+                <filter id="filter1_d_190_52" x="12" y="12" width="36" height="36" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                  <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                  <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha" />
+                  <feMorphology radius="1" operator="dilate" in="SourceAlpha" result="effect1_dropShadow_190_52" />
+                  <feOffset />
+                  <feGaussianBlur stdDeviation="1" />
+                  <feComposite in2="hardAlpha" operator="out" />
+                  <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.1 0" />
+                  <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_190_52" />
+                  <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_190_52" result="shape" />
+                </filter>
+              </defs>
+            </svg>
+            <p class="question-type-label">문제 유형</p>
+            <h3 class="question-type-title">객관식</h3>
+            <p class="question-type-desc">결정 능력을 도전하는 명확한 옵션이 있는 질문을 만듭니다.</p>
+          </div>
+
+          <!-- 참 또는 거짓 문제 유형 카드 -->
+          <div class="question-type-card" data-type="OX">
+            <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <g filter="url(#filter0_ii_190_53)">
+                <circle cx="30" cy="30" r="30" fill="#F8F9FA" />
+              </g>
+              <g filter="url(#filter1_d_190_53)">
+                <rect x="15" y="15" width="30" height="14" rx="6" fill="white" />
+              </g>
+              <g filter="url(#filter2_d_190_53)">
+                <rect x="15" y="31" width="30" height="14" rx="6" fill="white" />
+              </g>
+              <path d="M32.5 35.5L27.5 40.5M27.5 35.5L32.5 40.5" stroke="#F49303" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+              <defs>
+                <!-- 필터 정의 생략 -->
+              </defs>
+            </svg>
+            <p class="question-type-label">문제 유형</p>
+            <h3 class="question-type-title">참 또는 거짓</h3>
+            <p class="question-type-desc">간단한 참 또는 거짓 문장으로 빠른 판단을 테스트합니다.</p>
+          </div>
+
+          <!-- 단답형 문제 유형 카드 -->
+          <div class="question-type-card" data-type="Short">
+            <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <g filter="url(#filter0_ii_190_54)">
+                <circle cx="30" cy="30" r="30" fill="#F8F9FA" />
+              </g>
+              <g filter="url(#filter1_d_190_54)">
+                <rect x="15" y="15" width="30" height="30" rx="6" fill="white" />
+              </g>
+              <rect x="18.75" y="24.75" width="22.5" height="10.5" rx="3.25" stroke="#F49303" stroke-width="1.5" />
+              <path d="M22 32H26" stroke="#F49303" stroke-width="1.5" stroke-linecap="round" />
+              <defs>
+                <!-- 필터 정의 생략 -->
+              </defs>
+            </svg>
+            <p class="question-type-label">문제 유형</p>
+            <h3 class="question-type-title">단답형</h3>
+            <p class="question-type-desc">간결하고 개방형 질문으로 정확한 답변을 유도합니다.</p>
+          </div>
+        </div>
+
+        <!-- 히스토리 영역 -->
+        <h2 class="history-title">히스토리</h2>
+        <a href="history.html" class="history-link">
+          <div class="question-history-card">
+            <div class="history-header">
+              <span class="history-title">길동님이 오늘 생성한 5개 Quiz.</span>
+            </div>
+            <div class="history-items">
+              <div class="history-box">퀴즈 1</div>
+              <div class="history-box">퀴즈 2</div>
+              <div class="history-box">퀴즈 3</div>
+              <div class="history-ellipsis">...</div>
+            </div>
+          </div>
+        </a>
+      </section>
+    </form>
+  </section>
+
+  <!-- 사이트 푸터 -->
+  <footer class="site-footer">
     <div class="footer-container">
-        <p>© <span id="year"></span> Speak. All rights reserved.</p>
+      <p>© <span id="year"></span> Quizly. All rights reserved.</p>
     </div>
-</footer>
+  </footer>
 
-<script>
+  <!-- JavaScript -->
+  <script>
     // 현재 연도 표시
     document.getElementById("year").textContent = new Date().getFullYear();
 
-    // 파일 업로드 후 파일명 리스트에 추가
-    document.getElementById('fileInput').addEventListener('change', function(event) {
-      const fileList = document.getElementById("fileList");
-      fileList.innerHTML = '';  // 기존 리스트 초기화
-      Array.from(event.target.files).forEach(file => {
-        const listItem = document.createElement("li");
-        listItem.textContent = `${file.name} (${(file.size / 1024).toFixed(2)}MB)`;
-        fileList.appendChild(listItem);
-      });
+    // "시작하기" 버튼 클릭 시 업로드 섹션 스크롤
+    document.querySelector(".main-btn").addEventListener("click", function () {
+      document.querySelector(".upload-and-tabs").scrollIntoView({ behavior: "smooth", block: "center" });
     });
 
-    // 탭 메뉴 전환 스크립트
-    const tabItems = document.querySelectorAll(".tab-item");
-    const tabPanels = document.querySelectorAll(".tab-panel");
+    // 파일 업로드 관련 코드 (드래그 앤 드롭 및 파일 목록 렌더링)
+    let selectedFiles = [];
+    const fileInput = document.querySelector('.file-input');
+    const uploadedFilesList = document.querySelector('.uploaded-files');
+    const dropArea = document.querySelector('.file-drop-area');
 
-    tabItems.forEach((item) => {
-      item.addEventListener("click", () => {
-        tabItems.forEach((i) => i.classList.remove("active"));
-        tabPanels.forEach((panel) => panel.classList.remove("active"));
+    function renderFileList() {
+      if (selectedFiles.length === 0) {
+        uploadedFilesList.innerHTML = '<li class="default-msg">.pdf / .hwp 등 파일을 업로드하세요</li>';
+        return;
+      }
+      uploadedFilesList.innerHTML = '';
+      selectedFiles.forEach((file, index) => {
+        let fileSize = file.size >= 1024 * 1024
+            ? (file.size / (1024 * 1024)).toFixed(2) + "MB"
+            : (file.size / 1024).toFixed(2) + "KB";
+        const li = document.createElement('li');
+        li.innerHTML = `<span class="file-info">${file.name} (${fileSize})</span>
+                        <span class="remove-file" data-index="${index}">&times;</span>`;
+        uploadedFilesList.appendChild(li);
+      });
+      document.querySelectorAll('.remove-file').forEach(btn => {
+        btn.addEventListener('click', function () {
+          const idx = parseInt(this.getAttribute('data-index'));
+          selectedFiles.splice(idx, 1);
+          renderFileList();
+        });
+      });
+    }
+    renderFileList();
 
-        item.classList.add("active");
-        const targetId = item.getAttribute("data-tab");
-        const targetPanel = document.getElementById(targetId);
-        if (targetPanel) {
-          targetPanel.classList.add("active");
+    fileInput.addEventListener('change', function (e) {
+      const files = Array.from(e.target.files);
+      selectedFiles = selectedFiles.concat(files);
+      renderFileList();
+      fileInput.value = '';
+    });
+
+    dropArea.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropArea.classList.add('dragover');
+    });
+    dropArea.addEventListener('dragleave', (e) => {
+      e.preventDefault();
+      dropArea.classList.remove('dragover');
+    });
+    dropArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropArea.classList.remove('dragover');
+      const files = Array.from(e.dataTransfer.files);
+      selectedFiles = selectedFiles.concat(files);
+      renderFileList();
+    });
+
+    // 과목명 입력 완료 버튼 (입력값을 지우지 않고 그대로 유지)
+    document.getElementById("subjectSubmitBtn").addEventListener("click", function () {
+      const subjectInput = document.querySelector(".subject-input");
+      const subject = subjectInput.value.trim();
+      if (subject !== "") {
+        const subjectHeading = document.getElementById("subjectHeading");
+        subjectHeading.textContent = subject;
+        subjectHeading.classList.remove("placeholder");
+        // 여기서 입력값을 그대로 유지하도록 주석 처리 또는 제거
+        // subjectInput.value = "";
+      }
+    });
+
+    // 문제 유형 카드 클릭 시 숨은 필드에 값 저장 후 폼 제출
+    document.querySelectorAll(".question-type-card").forEach(card => {
+      card.addEventListener("click", function () {
+        const selectedType = this.getAttribute("data-type");
+        document.getElementById("questionTypeInput").value = selectedType;
+
+        // DataTransfer 객체를 생성해서 file input의 파일 목록에 selectedFiles 배열의 파일들을 할당
+        if (selectedFiles.length > 0) {
+          let dt = new DataTransfer(); // 최신 브라우저에서 지원됨
+          selectedFiles.forEach(file => dt.items.add(file));
+          fileInput.files = dt.files;
         }
+
+        document.getElementById("uploadForm").submit();
       });
     });
-</script>
+  </script>
 </body>
 </html>

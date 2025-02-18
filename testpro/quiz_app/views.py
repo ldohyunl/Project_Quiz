@@ -1,6 +1,5 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .forms import FileUploadForm
-import os
 import openai
 import fitz  # PyMuPDF (PDF용)
 import openpyxl  # Excel용
@@ -140,37 +139,62 @@ def generate_quiz_with_gpt(text, question_type):
     return response.choices[0].message.content
 
 
-# 문제와 답을 딕셔너리로 변환하는 함수
-def parse_quiz_to_dict(quiz_text):
+# 문제 유형에 따라 문제와 답을 딕셔너리로 변환하는 함수
+def parse_quiz_to_dict(quiz_text, question_type):
     quiz_dict = {}
 
-    print(quiz_text)
+    print(quiz_text)  # 디버깅용, 생성된 문제 원본을 확인하기 위해 출력
 
-    # 문제별로 구분하는 패턴 (정답까지 포함)
-    question_pattern = r"(\d+)\.\s(.+?)(?=\n\d+\.|\Z)"  # 각 문제를 구분 (다음 문제 번호가 나오기 전까지)
-    choice_pattern = r"([a-d])\)\s(.+)"  # a) b) c) d) 선택지 추출
-    correct_answer_pattern = r"정답:\s*([a-d])"  # 정답 추출
+    if question_type == "MCQ":  # 객관식 문제
+        question_pattern = r"(\d+)\.\s(.+?)(?=\n\d+\.|\Z)"
+        choice_pattern = r"([a-d])\)\s(.+)"
+        correct_answer_pattern = r"정답:\s*([a-d])"
 
-    # 문제 추출
-    questions = re.findall(question_pattern, quiz_text, re.S)  # re.S를 추가해서 줄바꿈도 포함하도록 함
+        questions = re.findall(question_pattern, quiz_text, re.S)
 
-    quiz_dict = {}
+        for idx, question_text in questions:
+            choices = re.findall(choice_pattern, question_text)
+            choices_dict = {choice[0]: choice[1].strip() for choice in choices if choice[0] in ['a', 'b', 'c', 'd']}
+            correct_answer_match = re.search(correct_answer_pattern, question_text)
+            correct_answer = correct_answer_match.group(1) if correct_answer_match else "오류"
 
-    for idx, question_text in questions:
-        # 선택지 추출 (해당 문제 범위에서만 찾도록 함)
-        choices = re.findall(choice_pattern, question_text)
+            quiz_dict[idx] = {
+                'question': question_text.strip().split("\n")[0],
+                'choices': choices_dict,
+                'correct_answer': correct_answer
+            }
 
-        choices_dict = {choice[0]: choice[1].strip() for choice in choices if choice[0] in ['a', 'b', 'c', 'd']}
+    elif question_type == "OX":  # OX 문제
+        question_pattern = r"(\d+)\.\s(.+?)(?=\n\d+\.|\Z)"
+        correct_answer_pattern = r"정답:\s*(O|X)"
 
-        # 정답 찾기 (해당 문제 범위에서만)
-        correct_answer_match = re.search(correct_answer_pattern, question_text)
-        correct_answer = correct_answer_match.group(1) if correct_answer_match else "오류"
+        questions = re.findall(question_pattern, quiz_text, re.S)
 
-        quiz_dict[idx] = {
-            'question': question_text.strip().split("\n")[0],  # 첫 줄을 문제로 설정
-            'choices': choices_dict,
-            'correct_answer': correct_answer
-        }
+        for idx, question_text in questions:
+            correct_answer_match = re.search(correct_answer_pattern, question_text)
+            correct_answer = correct_answer_match.group(1) if correct_answer_match else "오류"
+
+            quiz_dict[idx] = {
+                'question': question_text.strip().split("\n")[0],
+                'choices': None,  # OX 문제는 선택지가 없음
+                'correct_answer': correct_answer
+            }
+
+    elif question_type == "Short":  # 단답형 문제
+        question_pattern = r"(\d+)\.\s(.+?)(?=\n\d+\.|\Z)"
+        correct_answer_pattern = r"정답:\s*(.+)"
+
+        questions = re.findall(question_pattern, quiz_text, re.S)
+
+        for idx, question_text in questions:
+            correct_answer_match = re.search(correct_answer_pattern, question_text)
+            correct_answer = correct_answer_match.group(1) if correct_answer_match else "오류"
+
+            quiz_dict[idx] = {
+                'question': question_text.strip().split("\n")[0],
+                'choices': None,  # 단답형 문제는 선택지가 없음
+                'correct_answer': correct_answer
+            }
 
     return quiz_dict
 
@@ -207,47 +231,48 @@ def index(request):
             try:
                 file_text = extract_text(file_path)
                 if file_text:
-                    # 🔹 GPT로 문제 생성
-
-                    quiz_text = generate_quiz_with_gpt(file_text, question_type)  # 문제 유형을 넘겨서 생성
-
-                    # 🔹 자동으로 딕셔너리 변환 후 DB에 저장
-                    quiz_dict = parse_quiz_to_dict(quiz_text)
-
-                    # 파일 이름을 포함하여 DB에 저장
+                    # GPT로 문제 생성
+                    quiz_text = generate_quiz_with_gpt(file_text, question_type)
+                    quiz_dict = parse_quiz_to_dict(quiz_text, question_type)
                     save_quiz_to_db(quiz_dict, request.user, file_name, question_type)
 
+                    # 문제 생성 후 바로 'example' 페이지로 리디렉션
+                    return redirect('example')
+                else:
                     return render(request, 'quiz_app/index.html', {
-                        'quiz_text': quiz_text,  # 웹에 표시 (GPT가 생성한 문제 원본)
+                        'error': "파일에서 텍스트를 추출할 수 없습니다.",
                         'form': form
                     })
-                else:
-                    return render(request, 'quiz_app/index.html', {'error': "파일에서 텍스트를 추출할 수 없습니다.", 'form': form})
             except Exception as e:
-                return render(request, 'quiz_app/index.html', {'error': f"오류 발생: {e}", 'form': form})
+                return render(request, 'quiz_app/index.html', {
+                    'error': f"오류 발생: {e}",
+                    'form': form
+                })
 
     return render(request, 'quiz_app/index.html', {'form': form})
 
 def example_view(request):
     # 예시: 특정 사용자의 최신 퀴즈 데이터를 가져옴
-    user = request.user  # 현재 로그인한 사용자를 가져옵니다
+    user = request.user  # 현재 로그인한 사용자를 가져옴
     quiz_data = User_Quiz_Data.objects.filter(user=user).order_by('-created_at').first()
 
-    # 퀴즈 데이터가 존재하면 해당 데이터를 템플릿에 전달
     if quiz_data:
         quiz_dict = quiz_data.quiz_data  # 저장된 quiz_data를 가져옴
+        question_type = quiz_data.question_type  # 문제 유형 가져오기
     else:
         quiz_dict = None
+        question_type = None
 
     # 현재 문제 번호 (1번 문제부터 시작)
     current_question_number = int(request.GET.get('question_number', 1))
 
     # 현재 문제 가져오기
-    current_question = quiz_dict.get(str(current_question_number), None)
+    current_question = quiz_dict.get(str(current_question_number), None) if quiz_dict else None
 
     context = {
         'current_question': current_question,
         'quiz_data': quiz_dict,
+        'question_type': question_type,
         'current_question_number': current_question_number,
     }
 

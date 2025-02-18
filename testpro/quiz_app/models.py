@@ -9,9 +9,11 @@ class User_Quiz_Data(models.Model):
     )
     file_name = models.CharField(max_length=255, default="Untitled")  # 파일 이름
     quiz_data = models.JSONField()  # 퀴즈 데이터를 JSON 형태로 저장
-    question_type = models.CharField(max_length=20,
-                                     choices=[('MCQ', '객관식'), ('OX', 'O/X'), ('Short', '단답형')],
-                                     default='MCQ')  # 문제 유형 저장
+    question_type = models.CharField(
+        max_length=20,
+        choices=[('MCQ', '객관식'), ('OX', 'O/X'), ('Short', '단답형')],
+        default='MCQ'
+    )  # 문제 유형 저장
     created_at = models.DateTimeField(auto_now_add=True)  # 생성 시간
 
     def __str__(self):
