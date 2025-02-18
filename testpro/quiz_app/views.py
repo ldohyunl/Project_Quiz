@@ -209,7 +209,6 @@ def save_quiz_to_db(quiz_dict, user, file_name, question_type):
     )
 
 
-@login_required
 def index(request):
     form = FileUploadForm()
     quiz_text = None  # GPT가 생성한 퀴즈 원본 텍스트
