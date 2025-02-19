@@ -1,19 +1,24 @@
-/* ◆ 전역 스타일 */
+/*
+  파일명: munje_multipleStyles.css
+  설명: 객관식 4지선다 퀴즈 페이지 스타일
+*/
+
+/* ==========================================
+   리셋 및 글로벌 스타일
+========================================== */
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
   font-family: 'Pretendard', sans-serif;
 }
-
 body {
-  font-family: 'Pretendard', sans-serif;
   background-color: #f8f9fa;
 }
 
-/*********************************************************************
-    1) 퀴즈 화면(문제 풀이) 스타일
-*********************************************************************/
+/* ==========================================
+ 퀴즈 컨테이너
+========================================== */
 .quiz-wrapper {
   max-width: 750px;
   width: 90%;
@@ -25,15 +30,16 @@ body {
   display: block;
 }
 
+/* ==========================================
+ 퀴즈 헤더
+========================================== */
 .quiz-header {
-  position: relative;
   padding: 1rem 1.5rem;
   background: #f8f9fa;
   display: flex;
   align-items: center;
   gap: 1rem;
 }
-
 .quiz-icon {
   width: 32px;
   height: 32px;
@@ -45,7 +51,6 @@ body {
   color: #fff;
   font-weight: bold;
 }
-
 .progress-bar {
   flex: 1;
   height: 6px;
@@ -54,31 +59,30 @@ body {
   overflow: hidden;
   position: relative;
 }
-
 .progress-fill {
   height: 100%;
-  width: 0; /* JS에서 제어 */
+  width: 0;
   background-color: #f49303;
   transition: width 0.3s;
 }
-
 .question-count {
   font-size: 0.9rem;
   color: #666;
   margin-left: auto;
 }
 
+/* ==========================================
+ 퀴즈 본문 및 보기 영역
+========================================== */
 .quiz-body {
   padding: 1.5rem;
 }
-
 .question-number {
   font-size: 0.9rem;
   color: #f49303;
   font-weight: 600;
   margin-bottom: 0.3rem;
 }
-
 .question-text {
   font-size: 1.3rem;
   font-weight: 600;
@@ -86,14 +90,12 @@ body {
   margin-bottom: 1rem;
   line-height: 1.4;
 }
-
 .choices {
   list-style: none;
   margin: 0;
   padding: 0;
   margin-bottom: 1.5rem;
 }
-
 .choice-item {
   display: flex;
   align-items: center;
@@ -107,17 +109,14 @@ body {
   cursor: pointer;
   transition: border-color 0.2s, background-color 0.2s;
 }
-
 .choice-item:hover {
   border-color: #fcd7ab;
   background: #fef8f2;
 }
-
 .choice-text {
   font-size: 1rem;
   color: #444;
 }
-
 .choice-label {
   font-size: 0.9rem;
   font-weight: 700;
@@ -129,36 +128,37 @@ body {
   transition: background 0.2s, color 0.2s;
 }
 
+/* ==========================================
+ 보기 상태 (선택됨, 정답, 오답)
+========================================== */
 .choice-item.selected {
   border-color: #f49303;
   background: #fef1db;
 }
-
 .choice-item.selected .choice-label {
   background: #f49303;
   color: #fff;
 }
-
 .choice-item.correct {
   border-color: #28a745;
   background: #eaf9f0;
 }
-
 .choice-item.correct .choice-label {
   background: #28a745;
   color: #fff;
 }
-
 .choice-item.wrong {
   border-color: #dc3545;
   background: #fde2e0;
 }
-
 .choice-item.wrong .choice-label {
   background: #dc3545;
   color: #fff;
 }
 
+/* ==========================================
+ 결과 표시 영역 및 버튼
+========================================== */
 .result-bar {
   display: flex;
   padding: 1rem 1.5rem;
@@ -167,34 +167,28 @@ body {
   justify-content: space-between;
   gap: 1rem;
 }
-
 .result-bar.correct {
   background: #eaf9f0;
   color: #28a745;
 }
-
 .result-bar.wrong {
   background: #fde2e0;
   color: #dc3545;
 }
-
 .result-info {
   display: flex;
   align-items: center;
   font-weight: 600;
   font-size: 1rem;
 }
-
 .result-info .icon {
   font-size: 1.2rem;
   margin-right: 0.4rem;
 }
-
 .btn-box {
   display: flex;
   gap: 0.5rem;
 }
-
 .quiz-btn {
   border: none;
   outline: none;
@@ -204,24 +198,21 @@ body {
   cursor: pointer;
   transition: background 0.2s;
 }
-
 .quiz-btn.confirm {
   background: #f49303;
   color: #fff;
 }
-
 .quiz-btn.confirm:hover {
   background: #d67d02;
 }
-
 .quiz-btn.next {
   color: #fff;
   background: #888;
 }
 
-/*********************************************************************
-    2) 퀴즈 완료 화면 스타일
-*********************************************************************/
+/* ==========================================
+ 퀴즈 완료 화면
+========================================== */
 .quiz-complete-wrapper {
   display: none;
   max-width: 750px;
@@ -233,11 +224,10 @@ body {
   padding: 3rem 2rem;
   text-align: center;
 }
-
 .quiz-complete-icon {
   width: 80px;
   height: 80px;
-  margin: 0 auto 1rem auto;
+  margin: 0 auto 1rem;
   background: #ffe9c4;
   border-radius: 50%;
   display: flex;
@@ -246,14 +236,12 @@ body {
   font-size: 2rem;
   color: #f49303;
 }
-
 .quiz-complete-title {
   font-size: 1.8rem;
   font-weight: 700;
   margin-bottom: 1rem;
   color: #333;
 }
-
 .quiz-complete-score {
   display: inline-block;
   margin: 1rem 0;
@@ -264,15 +252,13 @@ body {
   font-weight: 700;
   font-size: 1.1rem;
 }
-
 .quiz-complete-button-row {
   display: flex;
   justify-content: center;
   gap: 1rem;
   margin: 2rem 0;
 }
-
-.quiz-complete-button-row .btn-icon {
+.btn-icon {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -286,29 +272,41 @@ body {
   border-radius: 8px;
   transition: background 0.2s;
 }
-
-.quiz-complete-button-row .btn-icon:hover {
+.btn-icon:hover {
   background: #f8f9fa;
 }
-
-.quiz-complete-button-row .btn-icon span {
+.btn-icon span {
   font-size: 0.7rem;
   margin-top: 2px;
 }
 
-.quiz-complete-restart-btn {
-  display: inline-block;
-  margin-top: 1rem;
+/* ==========================================
+ 액션 버튼 (재시작, 홈 이동)
+========================================== */
+.quiz-complete-restart-btn,
+.quiz-complete-home-btn {
+  border: none;
+  outline: none;
+  border-radius: 8px;
   padding: 0.8rem 1.5rem;
   font-size: 1rem;
-  border: none;
-  border-radius: 8px;
-  background: #f49303;
-  color: #fff;
   cursor: pointer;
   transition: background 0.2s;
+  display: block;
+  width: 200px;
+  margin: 1rem auto;
 }
-
+.quiz-complete-restart-btn {
+  background: #f49303;
+  color: #fff;
+}
 .quiz-complete-restart-btn:hover {
   background: #d67d02;
+}
+.quiz-complete-home-btn {
+  background: #f8f9fa;
+  color: #333;
+}
+.quiz-complete-home-btn:hover {
+  background: #e2e6ea;
 }

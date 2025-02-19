@@ -62,78 +62,97 @@ def extract_text(file_path):
 
 # GPT로 문제 생성 함수
 def generate_quiz_with_gpt(text, question_type):
-    # System prompt를 별도로 변수에 저장
     system_prompt = """
-    You have excellent knowledge in all fields. Create difficult problems in a format based on text provided by the user.
+    You have excellent knowledge in all fields. Create challenging and accurate problems based on the text provided by the user.
     """
 
-    # 문제 유형에 따라 prompt 내용 다르게 설정
-    if question_type == "MCQ":  # 객관식 문제
+    if question_type == "MCQ":
         prompt = f"""
-            다음 텍스트를 기반으로 10개의 객관식 문제를 만들어 주세요. *한국어로!!* 
+            Based on the text below, please create 10 multiple-choice questions in Korean.
 
-            === 주어진 텍스트 ===
+            === Given Text ===
             {text}
 
-            📌 문제 형식 (반드시 아래 형식을 지켜서 출력하세요):
-            1. [질문 내용]
-            a) [보기1]
-            b) [보기2]
-            c) [보기3]
-            d) [보기4]
-            정답: [정답의 알파벳 하나만 출력]
+            📌 Formatting Requirements:
+            - Each question must start with a number from "1." to "10.".
+            - Each question must have exactly 4 answer choices, formatted as "a)", "b)", "c)", "d)".
+            - Only one correct answer must be provided per question. Do not allow "all of the above" or multiple selections.
+            - After the choices, write the answer line in the format: "정답: [answer letter]". The answer letter must be one of a, b, c, or d.
+            - All answer choices must be distinct and logically consistent with the question.
+            - Ensure that the answer provided exactly matches one of the choices.
+            - For math problems, if necessary, use superscripts (e.g., 2³, x², 10⁵) and include any required functions or formulas.
 
-            📌 반드시 문제는 "1."부터 "10."까지 숫자로 시작해야 합니다.
-            📌 선택지는 "a)", "b)", "c)", "d)" 형식으로 작성하세요.
-            📌 "정답:" 뒤에는 오직 정답의 알파벳 (a/b/c/d)만 있어야 합니다.
-            📌 수학 문제에서 지수를 나타낼 때 `2^3` 같은 형식이 아니라, 반드시 **위 첨자(예: 2³, x², 10⁵)** 를 사용하세요.
-            📌 수식은 LaTeX이 아닌 일반적인 수학 표기법을 사용하세요. 
-            예시:
-            - `\$begin:math:text$ x^2 \\$end:math:text$` → `x²`
-            - `\\frac{{a}}{{b}}` → `a/b`
-            - `\\lim_{{x \\to 0}}` → `lim (x → 0)`
-            📌 **모든 선택지는 서로 다른 내용을 가져야 합니다.** (중복된 보기를 만들지 마세요.)
+            📌 Additional Requirements:
+            - If the text contains mathematical formulas, theories, or important concepts, create applied problems that require understanding and problem-solving skills.
+            - Use real-world examples to frame the questions wherever applicable.
+            - For scientific and historical facts, design analytical or inferential questions rather than direct recall.
+            - Ensure that problem difficulty is balanced, with a mix of direct application and higher-order thinking questions.
 
-            이 형식을 유지해서 문제를 만들어 주세요.
+            📌 Pre-Submission Checklist:
+            - Verify that the answer for each question logically matches the question and the provided choices.
+            - Make sure there are no duplicate choices and no typos or logical errors in the questions or choices.
+            - If a problem requires functions or mathematical expressions, ensure that such elements are correctly included.
+
+            Example Format:
+            1. [Applied Question based on given text]
+            a) [Choice 1]
+            b) [Choice 2]
+            c) [Choice 3]
+            d) [Choice 4]
+            정답: [Correct answer letter]
+
+            Please strictly adhere to this format when generating the questions.
         """
-    elif question_type == "OX":  # O/X 문제
+    elif question_type == "OX":
         prompt = f"""
-            다음 텍스트를 기반으로 10개의 O/X 문제를 만들어 주세요. *한국어로!!*
+            Based on the text below, please create 10 True/False (O/X) questions in Korean.
 
-            === 주어진 텍스트 ===
+            === Given Text ===
             {text}
 
-            📌 문제 형식 (반드시 아래 형식을 지켜서 출력하세요):
-            1. [질문 내용]
-            정답: [O 또는 X]
+            📌 Formatting Requirements:
+            - Each question must start with a number from "1." to "10.".
+            - Write only the question text, followed by an answer line formatted as: "정답: [O or X]".
+            - The answer must be either "O" or "X".
+            - Verify that each answer logically corresponds to the question content.
 
-            📌 반드시 문제는 "1."부터 "10."까지 숫자로 시작해야 합니다.
-            📌 정답은 "O" 또는 "X"로만 작성해주세요.
+            📌 Additional Requirements:
+            - If the given text contains mathematical principles, physics laws, or technological concepts, modify them into applied questions rather than direct recall.
+            - For scientific and historical information, test understanding through cause-and-effect-based true/false questions.
+
+            Please strictly adhere to this format when generating the questions.
         """
-    elif question_type == "Short":  # 단답형 문제
+    elif question_type == "Short":
         prompt = f"""
-            다음 텍스트를 기반으로 10개의 단답형 문제를 만들어 주세요. *한국어로!!*
+            Based on the text below, please create 10 short-answer questions in Korean.
 
-            === 주어진 텍스트 ===
+            === Given Text ===
             {text}
 
-            📌 문제 형식 (반드시 아래 형식을 지켜서 출력하세요):
-            1. [질문 내용]
-            정답: [정답 내용]
+            📌 Formatting Requirements:
+            - Each question must start with a number from "1." to "10.".
+            - Provide a single-line question followed by an answer line in the format: "정답: [Answer text]".
+            - The answer must be a single word or a very short phrase (e.g., "타원", "산란") without any trailing punctuation or extra explanation.
+            - Do not generate questions that ask for a process explanation (e.g., "과정을 설명하세요", "어떻게 ~하는지 서술하시오"). Instead, focus on fact-based questions answerable with one word or a short phrase.
+            - Ensure that the question and answer logically match and are free of errors.
 
-            📌 반드시 문제는 "1."부터 "10."까지 숫자로 시작해야 합니다.
+            📌 Additional Requirements:
+            - If the given text contains formulas or theoretical principles, create problem-solving or applied questions that can be answered concisely.
+            - Make sure questions require logical deduction or direct recall of facts, not extended explanations.
+            - Ensure that answers are limited to one word or a very short phrase without any trailing punctuation.
+
+            Please strictly adhere to this format when generating the questions.
         """
     else:
-        raise ValueError("지원되지 않는 문제 유형입니다.")
+        raise ValueError("Unsupported question type.")
 
-    # GPT-4 요청
     response = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": prompt}
         ],
-        max_tokens=4000
+        max_tokens=10000
     )
 
     return response.choices[0].message.content
@@ -235,8 +254,14 @@ def index(request):
                     quiz_dict = parse_quiz_to_dict(quiz_text, question_type)
                     save_quiz_to_db(quiz_dict, request.user, file_name, question_type)
 
-                    # 문제 생성 후 바로 'example' 페이지로 리디렉션
-                    return redirect('example')
+                    # 문제 유형에 따라 다른 뷰로 리다이렉트
+                    if question_type == "MCQ":
+                        return redirect('multiple')
+                    elif question_type == "Short":
+                        return redirect('short')
+                    else:
+                        return redirect('OX')
+
                 else:
                     return render(request, 'quiz_app/index.html', {
                         'error': "파일에서 텍스트를 추출할 수 없습니다.",
@@ -250,29 +275,98 @@ def index(request):
 
     return render(request, 'quiz_app/index.html', {'form': form})
 
-def example_view(request):
-    # 예시: 특정 사용자의 최신 퀴즈 데이터를 가져옴
-    user = request.user  # 현재 로그인한 사용자를 가져옴
-    quiz_data = User_Quiz_Data.objects.filter(user=user).order_by('-created_at').first()
 
-    if quiz_data:
-        quiz_dict = quiz_data.quiz_data  # 저장된 quiz_data를 가져옴
-        question_type = quiz_data.question_type  # 문제 유형 가져오기
+def multiple_view(request):
+    # 1. DB에서 최신 퀴즈 데이터 가져오기
+    user = request.user
+    quiz_data_obj = User_Quiz_Data.objects.filter(user=user).order_by('-created_at').first()
+
+    if quiz_data_obj:
+        quiz_dict = quiz_data_obj.quiz_data  # 예: {"1": {...}, "2": {...}, ...}
+        question_type = quiz_data_obj.question_type
     else:
         quiz_dict = None
         question_type = None
 
-    # 현재 문제 번호 (1번 문제부터 시작)
+    # 2. 현재 문제 번호 (1번부터 시작)
     current_question_number = int(request.GET.get('question_number', 1))
 
-    # 현재 문제 가져오기
+    # 3. 현재 문제 가져오기
     current_question = quiz_dict.get(str(current_question_number), None) if quiz_dict else None
 
+    # 4. 템플릿에 전달할 컨텍스트
     context = {
         'current_question': current_question,
         'quiz_data': quiz_dict,
         'question_type': question_type,
         'current_question_number': current_question_number,
     }
-
+    # Multiple Choice (객관식) → example.html
     return render(request, 'quiz_app/example.html', context)
+
+def short_view(request):
+    # 1. DB에서 최신 퀴즈 데이터 가져오기
+    user = request.user
+    quiz_data_obj = User_Quiz_Data.objects.filter(user=user).order_by('-created_at').first()
+
+    if quiz_data_obj:
+        quiz_dict = quiz_data_obj.quiz_data
+        question_type = quiz_data_obj.question_type
+    else:
+        quiz_dict = {}
+        question_type = None
+
+    # 2. quiz_dict의 데이터를 프론트엔드에서 사용할 배열 형태로 변환
+    questions = []
+    # quiz_dict의 key가 문자열 숫자("1", "2", ...)이므로 정렬할 때 int로 변환합니다.
+    for key in sorted(quiz_dict.keys(), key=int):
+        q = quiz_dict[key]
+        questions.append({
+            'text': q.get('question', ''),
+            'answer': q.get('correct_answer', '')
+        })
+
+    # 3. 템플릿에 전달할 컨텍스트 (questions 리스트를 포함)
+    context = {
+        'questions': questions,
+        'quiz_data': quiz_dict,
+        'question_type': question_type,
+    }
+    # Short Answer (단답형) → munje_shortanswer.html
+    return render(request, 'quiz_app/munje_shortanswer.html', context)
+
+def OX_view(request):
+    # 1. DB에서 최신 퀴즈 데이터 가져오기
+    user = request.user
+    quiz_data_obj = User_Quiz_Data.objects.filter(user=user).order_by('-created_at').first()
+
+    if quiz_data_obj:
+        quiz_dict = quiz_data_obj.quiz_data  # 예: {"1": {"question": "...", "correct_answer": "O"}, ...}
+        question_type = quiz_data_obj.question_type
+    else:
+        quiz_dict = {}
+        question_type = None
+
+    # 2. DB에 저장된 O/X 퀴즈 데이터를 프론트엔드에서 사용할 배열 형태로 변환
+    # 각 문제는 { text, options, correctIndex } 형태가 되도록 변환합니다.
+    # - options는 고정으로 ["참", "거짓"]입니다.
+    # - correctIndex는 correct_answer가 "O"이면 0, "X"이면 1로 설정합니다.
+    questions = []
+    for key in sorted(quiz_dict.keys(), key=int):
+        q = quiz_dict[key]
+        correct_ans = q.get("correct_answer", "O")
+        correctIndex = 0 if correct_ans.upper() == "O" else 1
+        questions.append({
+            "text": q.get("question", ""),
+            "options": ["참", "거짓"],
+            "correctIndex": correctIndex
+        })
+
+    # 3. 템플릿에 전달할 컨텍스트 구성
+    context = {
+        "questions": questions,
+        "quiz_data": quiz_dict,
+        "question_type": question_type,
+    }
+    # O/X (True/False) → munje_truefalse.html
+    return render(request, "quiz_app/munje_truefalse.html", context)
