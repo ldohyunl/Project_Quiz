@@ -143,7 +143,7 @@ def generate_quiz_with_gpt(text, question_type):
 def parse_quiz_to_dict(quiz_text, question_type):
     quiz_dict = {}
 
-    print(quiz_text)  # 디버깅용, 생성된 문제 원본을 확인하기 위해 출력
+    #print(quiz_text)  # 디버깅용, 생성된 문제 원본을 확인하기 위해 출력
 
     if question_type == "MCQ":  # 객관식 문제
         question_pattern = r"(\d+)\.\s(.+?)(?=\n\d+\.|\Z)"
@@ -208,7 +208,7 @@ def save_quiz_to_db(quiz_dict, user, file_name, question_type):
         question_type=question_type  # 문제 유형 저장
     )
 
-
+from django.urls import reverse
 def index(request):
     form = FileUploadForm()
     quiz_text = None  # GPT가 생성한 퀴즈 원본 텍스트
@@ -229,10 +229,17 @@ def index(request):
 
             try:
                 file_text = extract_text(file_path)
-                if file_text:
+                if not request.user.is_authenticated: # 로그인 안하면 로그인 페이지로 리다이렉트 2/18 15:35 이도현
+                    print("로그인을 해주세요!!")
+                    return redirect(reverse('account_login'))
+                elif file_text:
                     # GPT로 문제 생성
+                    print("문제 생성 1111111!")
+                    #print(file_text)
                     quiz_text = generate_quiz_with_gpt(file_text, question_type)
+                    print("문제 생성 2222222!!")
                     quiz_dict = parse_quiz_to_dict(quiz_text, question_type)
+                    print("문제 생성 3333333!!")
                     save_quiz_to_db(quiz_dict, request.user, file_name, question_type)
 
                     # 문제 생성 후 바로 'example' 페이지로 리디렉션
@@ -276,3 +283,27 @@ def example_view(request):
     }
 
     return render(request, 'quiz_app/example.html', context)
+
+
+
+# ==== gpt code ==== 
+
+# from django.shortcuts import render, redirect
+# from django.http import JsonResponse
+# def question_type_view(request):
+#     """
+#     문제 유형 선택 페이지 뷰
+#     - 로그인되어 있지 않으면 로그인 페이지로 리디렉션 (로그인 후 원래 페이지로 돌아오도록 설정)
+#     - 로그인되어 있으면 기존 문제 유형 선택 페이지 렌더링
+#     """
+#     if not request.user.is_authenticated:
+#         return redirect(f'/accounts/login/?next={request.path}')  # 로그인 후 원래 페이지로 이동
+#     return render(request, 'quiz/question_type.html')  # 기존 문제 유형 선택 페이지
+
+
+# def check_login_status(request):
+#     """
+#     로그인 여부 확인 API
+#     - 현재 사용자가 로그인되어 있는지 JSON 응답 반환
+#     """
+#     return JsonResponse({'is_authenticated': request.user.is_authenticated})

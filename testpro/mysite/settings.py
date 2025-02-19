@@ -102,11 +102,11 @@ WSGI_APPLICATION = "mysite.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",  # MySQL 엔진 사용
-        "NAME": "project_quiz_db3",  # 공유할 데이터베이스 이름
-        "USER": "root",  # DB 사용자명
-        "PASSWORD": "hwoa13b78alvin!",  # DB 비밀번호
-        "HOST": "127.0.0.1",  # 로컬 호스트
-        "PORT": "3306",  # MySQL 기본 포트
+        "NAME": os.getenv("DATABASE_NAME"),  # 공유할 데이터베이스 이름
+        "USER": os.getenv("DATABASE_USER"),  # DB 사용자명
+        "PASSWORD": os.getenv("DATABASE_PASSWORD"),  # DB 비밀번호
+        "HOST": os.getenv("DATABASE_HOST"),  # 로컬 호스트
+        "PORT": os.getenv("DATABASE_PORT"),  # MySQL 기본 포트
     }
 }
 
@@ -162,7 +162,6 @@ AUTHENTICATION_BACKENDS = [
     'allauth.account.auth_backends.AuthenticationBackend',
     
 ]
-
 
 # Provider specific settings
 # ==== 🔗 소셜 로그인 제공자 설정 ====
