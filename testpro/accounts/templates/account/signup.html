@@ -1,45 +1,107 @@
-{% extends "account/base_entrance.html" %}
+{% load static %}
+{% load allauth account %}
+{% load socialaccount %}
 {% load allauth i18n %}
-{% block head_title %}
-    {% trans "Signup" %}
-{% endblock head_title %}
-{% block content %}
-    {% element h1 %}
-        {% trans "Sign Up" %}
-    {% endelement %}
-    {% setvar link %}
-        <a href="{{ login_url }}">
-        {% endsetvar %}
-        {% setvar end_link %}
-        </a>
-    {% endsetvar %}
-    {% element p %}
-        {% blocktranslate %}Already have an account? Then please {{ link }}sign in{{ end_link }}.{% endblocktranslate %}
-    {% endelement %}
-    {% if not SOCIALACCOUNT_ONLY %}
-        {% url 'account_signup' as action_url %}
-        {% element form form=form method="post" action=action_url tags="entrance,signup" %}
-            {% slot body %}
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        
+        ::-webkit-scrollbar {
+            display: none; /* 크롬, 사파리, 엣지 */
+        }
+        
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-blue-100">
+
+<section class="flex items-center justify-center min-h-screen px-4">
+    <div class="max-w-4xl w-full bg-white shadow-2xl rounded-3xl overflow-hidden lg:flex max-h-[90vh]">
+        <!-- 이미지 섹션 -->
+        <aside class="hidden lg:block lg:w-1/2 relative">
+            <img src="{% static 'accounts/img/login_bg_img.png' %}" 
+                alt="Welcome" class="absolute inset-0 w-full h-full object-cover bg-[#f49303]">
+        </aside>
+
+        <!-- 폼 섹션 -->
+        <main class="w-full p-6 lg:w-1/2 flex flex-col justify-center overflow-auto scrollbar-hide">
+            <div class="mb-6 text-center">
+                <a href="#" class="text-[#f49303] text-4xl font-extrabold">Quizly</a>
+                <h1 class="text-2xl font-bold mt-3">Create an Account</h1>
+            </div>
+
+            <!-- 회원가입 폼 -->
+            <form method="POST" action="{% url 'account_signup' %}" class="space-y-4">
                 {% csrf_token %}
-                {% element fields form=form unlabeled=True %}
-                {% endelement %}
-                {{ redirect_field }}
-            {% endslot %}
-            {% slot actions %}
-                {% element button tags="prominent,signup" type="submit" %}
-                    {% trans "Sign Up" %}
-                {% endelement %}
-            {% endslot %}
-        {% endelement %}
-    {% endif %}
-    {% if PASSKEY_SIGNUP_ENABLED %}
-        {% element hr %}
-        {% endelement %}
-        {% element button href=signup_by_passkey_url tags="prominent,signup,outline,primary" %}
-            {% trans "Sign up using a passkey" %}
-        {% endelement %}
-    {% endif %}
-    {% if SOCIALACCOUNT_ENABLED %}
-        {% include "socialaccount/snippets/login.html" with page_layout="entrance" %}
-    {% endif %}
-{% endblock content %}
+                
+                <!-- 이메일 -->
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                    <input type="email" id="email" name="email" required placeholder="example@email.com"
+                        class="mt-1 w-full p-2 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-blue-500">
+                </div>
+
+                <!-- 사용자 이름 -->
+                <div>
+                    <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+                    <input type="text" id="username" name="username" required placeholder="Your username"
+                        class="mt-1 w-full p-2 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-blue-500">
+                </div>
+
+                <!-- 비밀번호 -->
+                <div>
+                    <label for="password1" class="block text-sm font-medium text-gray-700">Password</label>
+                    <input type="password" id="password1" name="password1" required
+                        class="mt-1 w-full p-2 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-blue-500">
+                </div>
+
+                <!-- 비밀번호 확인 -->
+                <div>
+                    <label for="password2" class="block text-sm font-medium text-gray-700">Confirm Password</label>
+                    <input type="password" id="password2" name="password2" required
+                        class="mt-1 w-full p-2 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-blue-500">
+                </div>
+
+                <!-- 회원가입 버튼 -->
+                <button type="submit" class="w-full py-2 px-4 bg-[#f49303] text-white font-semibold rounded-lg">
+                    Sign Up
+                </button>
+            </form>
+
+            <!-- 추가 옵션 -->
+            <div class="flex justify-between items-center mt-4">
+                <p class="text-sm text-gray-600">
+                    Already have an account? 
+                    <a href="{% url 'account_login' %}" class="text-blue-600 hover:underline">Sign in</a>.
+                </p>
+            </div>
+
+            <hr class="my-4">
+
+            <!-- 소셜 로그인 -->
+            <div class="text-center">
+                <p class="text-gray-600">Or sign up with</p>
+                <div class="flex justify-center gap-4 mt-3">
+                    <a href="{% provider_login_url 'google' %}" class="w-12 h-12 flex items-center justify-center bg-white rounded-lg shadow-md">
+                        <img src="{% static 'accounts/img/google.svg' %}" alt="Google Login" class="w-6 h-6">
+                    </a>
+                    <a href="{% provider_login_url 'naver' %}" class="w-12 h-12 flex items-center justify-center bg-[#03C75A] rounded-lg shadow-md">
+                        <img src="{% static 'accounts/img/naver.png' %}" alt="Naver Login" class="w-8 h-8">
+                    </a>
+                    <a href="{% provider_login_url 'kakao' %}" class="w-12 h-12 flex items-center justify-center bg-[#FEE500] rounded-lg shadow-md">
+                        <img src="{% static 'accounts/img/kakao.svg' %}" alt="Kakao Login" class="w-6 h-6">
+                    </a>
+                </div>
+            </div>
+        </main>
+    </div>
+</section>
+
+</body>
+</html>

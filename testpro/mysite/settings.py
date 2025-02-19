@@ -199,6 +199,10 @@ SOCIALACCOUNT_PROVIDERS = {
 
 AUTH_USER_MODEL = "accounts.User"
 LOGIN_REDIRECT_URL = '/'
+ACCOUNT_LOGIN_REDIRECT_URL = '/'
+# settings.py
+ACCOUNT_SIGNUP_REDIRECT_URL = "/accounts/login/"
+
 #LOGIN_REDIRECT_URL = '/' # 로그인 리다이렉트 url 설정
 
 # # 회원가입 또는 비밀번호 찾기를 할 때 이메일을 전송해 인증
@@ -246,3 +250,9 @@ LOGIN_REDIRECT_URL = '/'
 # # django 3.1 이후 버전 (단위: 초) 
 # PASSWORD_RESET_TIMOUT = 100000
 
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER =  os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")

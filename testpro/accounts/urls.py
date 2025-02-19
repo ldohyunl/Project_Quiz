@@ -1,6 +1,5 @@
 from django.urls import path
 from . import views
+from .views import custom_login
 
-urlpatterns = [
-    path('login/', views.login_view, name='account_login'),  # 'account_login' 이름으로 URL 설정
-]
+
