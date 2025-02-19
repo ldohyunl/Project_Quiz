@@ -1,0 +1,94 @@
+
+{% load static %}
+{% load allauth account %}
+{% load socialaccount %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-blue-100">
+
+<section class="min-h-screen flex items-center justify-center px-4">
+    <div class="max-w-4xl w-full bg-white shadow-2xl rounded-3xl overflow-hidden lg:flex">
+        <!-- Image Section -->
+        <aside class="hidden lg:block lg:w-1/2 relative">
+            <img src="{% static 'accounts/img/login_bg_img.png' %}" 
+                alt="Welcome" class="absolute inset-0 w-full h-full object-cover bg-[#f49303]">
+        </aside>
+
+        <!-- Form Section -->
+        <main class="w-full p-8 lg:w-1/2 flex flex-col justify-center">
+            <div class="mb-8 text-center">
+                <a href="#" class="text-[#f49303] text-5xl font-extrabold">Quizly</a>
+                <h1 class="text-3xl font-bold mt-4">Welcome</h1>
+            </div>
+            
+            <!-- 로그인 폼 -->
+            <form method="POST" action="{% url 'account_login' %}" class="space-y-6">
+                {% csrf_token %}
+        
+                <!-- 이메일 또는 ID -->
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700">Email or ID</label>
+                    <input type="text" id="email" name="login" placeholder="example@email.com or username"
+                        class="mt-1 w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    {% if form.login.errors %}
+                        <p class="text-red-500 text-sm mt-1">{{ form.login.errors.0 }}</p>
+                    {% endif %}
+                </div>
+        
+                <!-- 비밀번호 -->
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                    <input type="password" id="password" name="password"
+                        class="mt-1 w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    {% if form.password.errors %}
+                        <p class="text-red-500 text-sm mt-1">{{ form.password.errors.0 }}</p>
+                    {% endif %}
+                </div>
+        
+                <!-- 로그인 버튼 -->
+                <button type="submit" class="w-full py-3 px-6 bg-[#f49303] text-white font-semibold rounded-lg">
+                    Sign In
+                </button>
+            </form>
+                <!-- 추가 옵션 -->
+                <div class="flex justify-between items-center mt-6">
+                    <p class="text-sm text-gray-600">
+                        <a href="{% url 'account_reset_password' %}" class="text-blue-600 hover:underline">Forgot password?</a>
+                    </p>
+                    <p class="text-sm text-gray-600">
+                        Don't have an account? 
+                        <a href="{% url 'account_signup' %}" class="text-blue-600 hover:underline">Sign up</a>.
+                    </p>
+                </div>
+
+        
+                <hr>
+        
+                <!-- 소셜 로그인 -->
+                <div class="mt-6 text-center">
+                    <p class="text-gray-600">Or sign in with</p>
+                    <div class="flex justify-center gap-6 mt-4">
+                        <a href="{% provider_login_url 'google' %}" class="w-16 h-12 flex items-center justify-center bg-white rounded-lg shadow-md">
+                            <img src="{% static 'accounts/img/google.svg' %}" alt="Google Login" class="w-7 h-7 object-contain">
+                        </a>
+                        <a href="{% provider_login_url 'naver' %}" class="w-16 h-12 flex items-center justify-center bg-[#03C75A] rounded-lg shadow-md">
+                            <img src="{% static 'accounts/img/naver.png' %}" alt="Naver Login" class="w-11 h-11 object-cover">
+                        </a>
+                        <a href="{% provider_login_url 'kakao' %}" class="w-16 h-12 flex items-center justify-center bg-[#FEE500] rounded-lg shadow-md">
+                            <img src="{% static 'accounts/img/kakao.svg' %}" alt="Kakao Login" class="w-7 h-7 object-contain">
+                        </a>
+                    </div>
+                </div>
+            
+        </main>
+    </div>
+</section>
+
+</body>
+</html>

@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>Quizly - 메인 페이지</title>
+  <!-- Pretendard 폰트 CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" />
+  <!-- 페이지 전용 CSS -->
+  <link rel="stylesheet" href="{% static 'quiz_app/styles.css' %}" />
+</head>
+<body>
+
+  <!-- 사이트 헤더 -->
+  <header class="site-header">
+    <nav class="nav-container">
+      <div class="logo-area">
+        <a href="#" class="logo">Quizly</a>
+      </div>
+      <ul class="nav-menu">
+        {% if user.is_authenticated %}
+          <!-- 로그인 상태일 때 유저 이름과 로그아웃 버튼 표시 -->
+          <li>안녕하세요, {{ user.username }}님</li>
+          <li><a href="#" onclick="logoutUser()">로그아웃</a></li>
+        {% else %}
+          <!-- 로그인 상태가 아닐 때 로그인 버튼 표시 -->
+          <li><a href="{% url 'account_login' %}">로그인</a></li>
+        {% endif %}
+      </ul>
+    </nav>
+  </header>
+
+  <!-- 메인 소개 섹션 -->
+  <section class="main-section">
+    <div class="main-inner">
+      <div class="main-text">
+        <h1>AI와 함께 효율적인 학습을 시작하세요</h1>
+        <p>문서를 업로드하고 자동으로 생성되는<br>다양한 문제를 확인해보세요!</p>
+        <button type="button" class="main-btn">시작하기</button>
+      </div>
+      <div class="main-image"></div>
+    </div>
+  </section>
+
+  <!-- 업로드 및 문제 유형 선택 섹션 -->
+  <section class="upload-and-tabs">
+    <div class="section-title">
+      <h2>학습 자료 업로드</h2>
+      <p>업로드한 자료로 다양한 유형의 문제를 생성할 수 있습니다.</p>
+    </div>
+
+    <!-- 전체를 감싸는 폼 -->
+    <form id="uploadForm" method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+      <!-- 파일 업로드 카드 -->
+      <div class="card card-upload">
+        <div class="upload-container">
+          <!-- 과목명 표시 (초기 상태 placeholder) -->
+          <div class="subject-heading placeholder" id="subjectHeading">파일명</div>
+
+          <!-- 파일 드래그 앤 드롭 영역 -->
+          <div class="file-drop-area" id="fileDropArea">
+            <span class="file-message">파일을 드래그하거나 클릭하여 업로드</span>
+            <!-- form의 file 필드 (이름은 "file") -->
+            <input type="file" name="file" multiple class="file-input" required />
+          </div>
+
+          <!-- 업로드된 파일 목록 -->
+          <ul class="uploaded-files">
+            <li class="default-msg">.pdf / .docx 등 파일을 업로드하세요</li>
+          </ul>
+
+          <!-- 과목명 입력 및 완료 버튼 -->
+          <div class="subject-input-container">
+            <!-- form의 file_name 필드 (이름은 "file_name") -->
+            <input type="text" name="file_name" class="subject-input" placeholder="파일명을 입력하세요" />
+            <!-- 입력값을 그대로 유지하도록 함 -->
+            <button type="button" class="subject-submit-btn" id="subjectSubmitBtn">완료</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 숨은 필드: 문제 유형 (Django 폼의 question_type 필드와 이름 일치) -->
+      <input type="hidden" name="question_type" id="questionTypeInput" value="MCQ" />
+
+      <!-- 문제 유형 선택 섹션 -->
+      <section class="question-type-section">
+        <div class="question-type-container">
+          <!-- 객관식 문제 유형 카드 -->
+          <div class="question-type-card" data-type="MCQ">
+            <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <g filter="url(#filter0_ii_190_52)">
+                <circle cx="30" cy="30" r="30" fill="#F8F9FA" />
+              </g>
+              <g filter="url(#filter1_d_190_52)">
+                <rect x="15" y="15" width="30" height="30" rx="6" fill="white" />
+              </g>
+              <circle cx="21" cy="39" r="2" fill="#F2F3F5" />
+              <circle cx="21" cy="33" r="2" fill="#F2F3F5" />
+              <circle cx="21" cy="27" r="2" fill="#F49303" />
+              <circle cx="21" cy="21" r="2" fill="#F2F3F5" />
+              <rect x="25" y="37" width="16" height="4" rx="2" fill="#F2F3F5" />
+              <rect x="25" y="31" width="16" height="4" rx="2" fill="#F2F3F5" />
+              <rect x="25" y="25" width="16" height="4" rx="2" fill="#F49303" />
+              <rect x="25" y="19" width="16" height="4" rx="2" fill="#F2F3F5" />
+              <defs>
+                <filter id="filter0_ii_190_52" x="-0.5" y="-0.5" width="62" height="62" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                  <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                  <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+                  <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha" />
+                  <feMorphology radius="2" operator="erode" in="SourceAlpha" result="effect1_innerShadow_190_52" />
+                  <feOffset dx="1.5" dy="1.5" />
+                  <feGaussianBlur stdDeviation="1" />
+                  <feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1" />
+                  <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.1 0" />
+                  <feBlend mode="normal" in2="shape" result="effect1_innerShadow_190_52" />
+                  <feMorphology radius="3" operator="erode" in="SourceAlpha" result="effect2_innerShadow_190_52" />
+                  <feOffset dx="-0.5" dy="-0.5" />
+                  <feGaussianBlur stdDeviation="1" />
+                  <feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1" />
+                  <feColorMatrix type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0" />
+                  <feBlend mode="normal" in2="effect1_innerShadow_190_52" result="effect2_innerShadow_190_52" />
+                </filter>
+                <filter id="filter1_d_190_52" x="12" y="12" width="36" height="36" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                  <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                  <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha" />
+                  <feMorphology radius="1" operator="dilate" in="SourceAlpha" result="effect1_dropShadow_190_52" />
+                  <feOffset />
+                  <feGaussianBlur stdDeviation="1" />
+                  <feComposite in2="hardAlpha" operator="out" />
+                  <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.1 0" />
+                  <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_190_52" />
+                  <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_190_52" result="shape" />
+                </filter>
+              </defs>
+            </svg>
+            <p class="question-type-label">문제 유형</p>
+            <h3 class="question-type-title">객관식</h3>
+            <p class="question-type-desc">결정 능력을 도전하는 명확한 옵션이 있는 질문을 만듭니다.</p>
+          </div>
+
+          <!-- 참 또는 거짓 문제 유형 카드 -->
+          <div class="question-type-card" data-type="OX">
+            <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <g filter="url(#filter0_ii_190_53)">
+                <circle cx="30" cy="30" r="30" fill="#F8F9FA" />
+              </g>
+              <g filter="url(#filter1_d_190_53)">
+                <rect x="15" y="15" width="30" height="14" rx="6" fill="white" />
+              </g>
+              <g filter="url(#filter2_d_190_53)">
+                <rect x="15" y="31" width="30" height="14" rx="6" fill="white" />
+              </g>
+              <path d="M32.5 35.5L27.5 40.5M27.5 35.5L32.5 40.5" stroke="#F49303" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+              <defs>
+                <!-- 필터 정의 생략 -->
+              </defs>
+            </svg>
+            <p class="question-type-label">문제 유형</p>
+            <h3 class="question-type-title">참 또는 거짓</h3>
+            <p class="question-type-desc">간단한 참 또는 거짓 문장으로 빠른 판단을 테스트합니다.</p>
+          </div>
+
+          <!-- 단답형 문제 유형 카드 -->
+          <div class="question-type-card" data-type="Short">
+            <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <g filter="url(#filter0_ii_190_54)">
+                <circle cx="30" cy="30" r="30" fill="#F8F9FA" />
+              </g>
+              <g filter="url(#filter1_d_190_54)">
+                <rect x="15" y="15" width="30" height="30" rx="6" fill="white" />
+              </g>
+              <rect x="18.75" y="24.75" width="22.5" height="10.5" rx="3.25" stroke="#F49303" stroke-width="1.5" />
+              <path d="M22 32H26" stroke="#F49303" stroke-width="1.5" stroke-linecap="round" />
+              <defs>
+                <!-- 필터 정의 생략 -->
+              </defs>
+            </svg>
+            <p class="question-type-label">문제 유형</p>
+            <h3 class="question-type-title">단답형</h3>
+            <p class="question-type-desc">간결하고 개방형 질문으로 정확한 답변을 유도합니다.</p>
+          </div>
+        </div>
+
+        <!-- 히스토리 영역 -->
+        <h2 class="history-title">히스토리</h2>
+        <a href="{% url 'history' %}" class="history-link">
+          <div class="question-history-card">
+            <div class="history-header">
+              <span class="history-title">길동님이 오늘 생성한 5개 Quiz.</span>
+            </div>
+            <div class="history-items">
+              <div class="history-box">퀴즈 1</div>
+              <div class="history-box">퀴즈 2</div>
+              <div class="history-box">퀴즈 3</div>
+              <div class="history-ellipsis">...</div>
+            </div>
+          </div>
+        </a>
+      </section>
+    </form>
+  </section>
+
+  <!-- 사이트 푸터 -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <p>© <span id="year"></span> Quizly. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- JavaScript -->
+  <script>
+    // 현재 연도 표시
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    // "시작하기" 버튼 클릭 시 업로드 섹션 스크롤
+    document.querySelector(".main-btn").addEventListener("click", function () {
+      document.querySelector(".upload-and-tabs").scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+
+    // 파일 업로드 관련 코드 (드래그 앤 드롭 및 파일 목록 렌더링)
+    let selectedFiles = [];
+    const fileInput = document.querySelector('.file-input');
+    const uploadedFilesList = document.querySelector('.uploaded-files');
+    const dropArea = document.querySelector('.file-drop-area');
+
+    function renderFileList() {
+      if (selectedFiles.length === 0) {
+        uploadedFilesList.innerHTML = '<li class="default-msg">.pdf / .docx 등 파일을 업로드하세요</li>';
+        return;
+      }
+      uploadedFilesList.innerHTML = '';
+      selectedFiles.forEach((file, index) => {
+        let fileSize = file.size >= 1024 * 1024
+            ? (file.size / (1024 * 1024)).toFixed(2) + "MB"
+            : (file.size / 1024).toFixed(2) + "KB";
+        const li = document.createElement('li');
+        li.innerHTML = `<span class="file-info">${file.name} (${fileSize})</span>
+                        <span class="remove-file" data-index="${index}">&times;</span>`;
+        uploadedFilesList.appendChild(li);
+      });
+      document.querySelectorAll('.remove-file').forEach(btn => {
+        btn.addEventListener('click', function () {
+          const idx = parseInt(this.getAttribute('data-index'));
+          selectedFiles.splice(idx, 1);
+          renderFileList();
+        });
+      });
+    }
+    renderFileList();
+
+    fileInput.addEventListener('change', function (e) {
+      const files = Array.from(e.target.files);
+      selectedFiles = selectedFiles.concat(files);
+      renderFileList();
+      fileInput.value = '';
+    });
+
+    dropArea.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropArea.classList.add('dragover');
+    });
+    dropArea.addEventListener('dragleave', (e) => {
+      e.preventDefault();
+      dropArea.classList.remove('dragover');
+    });
+    dropArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropArea.classList.remove('dragover');
+      const files = Array.from(e.dataTransfer.files);
+      selectedFiles = selectedFiles.concat(files);
+      renderFileList();
+    });
+
+    // 과목명 입력 완료 버튼 (입력값 그대로 유지)
+    document.getElementById("subjectSubmitBtn").addEventListener("click", function () {
+      const subjectInput = document.querySelector(".subject-input");
+      const subject = subjectInput.value.trim();
+      if (subject !== "") {
+        const subjectHeading = document.getElementById("subjectHeading");
+        subjectHeading.textContent = subject;
+        subjectHeading.classList.remove("placeholder");
+        // 입력값을 지우지 않음 (폼에 file_name 값으로 유지됨)
+      }
+    });
+
+    // 문제 유형 카드 클릭 시 숨은 필드에 값 저장 후 폼 제출
+    document.querySelectorAll(".question-type-card").forEach(card => {
+      card.addEventListener("click", function () {
+        const selectedType = this.getAttribute("data-type");
+        document.getElementById("questionTypeInput").value = selectedType;
+
+        // DataTransfer 객체를 생성해서 file input의 파일 목록에 selectedFiles 배열의 파일들을 할당
+        if (selectedFiles.length > 0) {
+          let dt = new DataTransfer();
+          selectedFiles.forEach(file => dt.items.add(file));
+          fileInput.files = dt.files;
+        }
+
+        document.getElementById("uploadForm").submit();
+      });
+    });
+  </script>
+
+  <!-- 25/02/14 (09:22) 로그아웃 처리 스크립트 추가 -->
+  <script>
+    function logoutUser() {
+        fetch("/accounts/logout/", {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": getCookie("csrftoken"),
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            credentials: "same-origin"
+        }).then(response => {
+            window.location.href = "/"; // 로그아웃 후 메인 페이지로 이동
+        });
+
+        return false;  // a 태그의 기본 동작 방지
+    }
+
+    // CSRF 토큰 가져오는 함수
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== "") {
+            let cookies = document.cookie.split(";");
+            for (let i = 0; i < cookies.length; i++) {
+                let cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + "=")) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+  </script>
+</body>
+</html>

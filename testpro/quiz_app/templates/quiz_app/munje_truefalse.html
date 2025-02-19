@@ -1,0 +1,265 @@
+<!--
+  파일명: munje_truefalse.html
+  설명: 참/거짓 퀴즈 예제 (Django 뷰의 questions 데이터를 사용)
+-->
+<!DOCTYPE html>
+<html lang="ko">
+{% load static %}
+<head>
+  <meta charset="UTF-8" />
+  <title>참/거짓 퀴즈 - 예시</title>
+  <!-- 외부 CSS 파일 연결 (참/거짓 퀴즈 스타일) -->
+  <link rel="stylesheet" href="{% static 'quiz_app/munje_truefalseStyles.css' %}">
+
+</head>
+<body>
+  <!-- ==========================================
+       퀴즈 인터페이스 영역
+       - 퀴즈 헤더 (아이콘, 진행바, 문제 번호)
+       - 퀴즈 본문 (문제, 참/거짓 보기)
+       - 결과 표시 영역 (정답/오답, 버튼)
+  =========================================== -->
+  <div class="quiz-wrapper" id="quizWrapper">
+    <!-- 퀴즈 헤더 -->
+    <div class="quiz-header">
+      <div class="quiz-icon">Q</div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <div class="question-count" id="questionCountText">1/10</div>
+    </div>
+    <!-- 퀴즈 본문 -->
+    <div class="quiz-body">
+      <div class="question-number" id="questionNumber"></div>
+      <div class="question-text" id="questionText"></div>
+      <!-- 참/거짓 보기 리스트 -->
+      <ul class="choices" id="choicesList"></ul>
+    </div>
+    <!-- 결과 표시 영역 -->
+    <div class="result-bar" id="resultBar">
+      <div class="result-info" id="resultText"></div>
+      <div class="btn-box">
+        <button class="quiz-btn confirm" id="confirmBtn">확인</button>
+        <button class="quiz-btn next" id="nextBtn" style="display:none;">계속</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       퀴즈 완료 영역
+       - 최종 점수 표시 및 재시작, 공유, 홈 이동 버튼 제공
+  =========================================== -->
+  <div class="quiz-complete-wrapper" id="quizCompleteWrapper">
+    <div class="quiz-complete-icon">★</div>
+    <h2 class="quiz-complete-title">퀴즈 완료</h2>
+    <div class="quiz-complete-score" id="finalScore">0/10</div>
+    <div class="quiz-complete-button-row">
+      <div class="btn-icon" id="btnRestart">
+        <div>↩</div>
+        <span>재시작</span>
+      </div>
+      <div class="btn-icon" id="btnShare">
+        <div>🔗</div>
+        <span>공유</span>
+      </div>
+    </div>
+    <!-- 액션 버튼: 새로운 퀴즈 생성 및 홈으로 이동 -->
+    <button class="quiz-complete-restart-btn" id="createNewQuizBtn">새로운 퀴즈 생성</button>
+    <button class="quiz-complete-home-btn" id="goHomeBtn">홈으로 가기</button>
+  </div>
+
+  <!-- ==========================================
+       자바스크립트 로직 영역
+       - 참/거짓 퀴즈 데이터, 전역 변수, DOM 요소, 이벤트 및 함수 정의
+  =========================================== -->
+  <script>
+    // Django 뷰에서 전달한 questions 데이터를 사용 (Django 템플릿 변수)
+    const questions = {{ questions|safe }};
+
+    // ===== 전역 변수 =====
+    let currentQuestionIndex = 0;
+    let userAnswer = null;
+    let isConfirmed = false;
+    const totalQuestions = questions.length;
+    let correctCount = 0;
+
+    // ===== DOM 요소 참조 =====
+    const quizWrapper = document.getElementById("quizWrapper");
+    const quizCompleteWrapper = document.getElementById("quizCompleteWrapper");
+    const questionCountText = document.getElementById("questionCountText");
+    const progressFill = document.getElementById("progressFill");
+    const questionNumberEl = document.getElementById("questionNumber");
+    const questionTextEl = document.getElementById("questionText");
+    const choicesListEl = document.getElementById("choicesList");
+    const confirmBtn = document.getElementById("confirmBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const resultBar = document.getElementById("resultBar");
+    const resultText = document.getElementById("resultText");
+    const finalScoreEl = document.getElementById("finalScore");
+
+    // ===== 초기 퀴즈 로드 =====
+    loadQuestion();
+
+    // 함수: 현재 문제와 참/거짓 보기를 로드하여 화면에 표시
+    function loadQuestion() {
+      updateProgressBar();
+      questionCountText.textContent = `${currentQuestionIndex + 1}/${totalQuestions}`;
+      isConfirmed = false;
+      userAnswer = null;
+      confirmBtn.style.display = "inline-block";
+      nextBtn.style.display = "none";
+      resultBar.className = "result-bar";
+      resultText.innerHTML = "";
+
+      const q = questions[currentQuestionIndex];
+      questionNumberEl.textContent = `문제 ${currentQuestionIndex + 1}`;
+      questionTextEl.textContent = q.text;
+      choicesListEl.innerHTML = "";
+
+      // 각 보기를 생성하여 리스트에 추가
+      q.options.forEach((opt, idx) => {
+        const li = document.createElement("li");
+        li.className = "choice-item";
+        li.dataset.index = idx;
+
+        // 아이콘은 기존 예제와 동일하게 SVG 아이콘 삽입 (참/거짓에 따라 다르게)
+        let iconSvg = "";
+        if (idx === 0) {
+          // 참 아이콘
+          iconSvg = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+            xmlns="http://www.w3.org/2000/svg">
+            <path d="M5.7 5.69897H4.5C3.67157 5.69897 3 6.37055 3 7.19897L3 17.495C3 18.3234 3.67157 18.995 4.5 18.995H5.7C6.52843 18.995 7.2 18.3234 7.2 17.495L7.2 7.19897C7.2 6.37055 6.52843 5.69897 5.7 5.69897Z"
+            stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M7.2 8.02495L7.2 15.9969C7.2 16.7926 7.51607 17.5557 8.07868 18.1183C8.64129 18.6809 9.40435 18.9969 10.2 18.9969L17.073 18.9969C17.6216 18.9969 18.1549 18.8165 18.5907 18.4834C19.0266 18.1504 19.3408 17.6832 19.485 17.1539L21.443 9.96595C21.544 9.59513 21.5581 9.20601 21.4843 8.82884C21.4105 8.45166 21.2508 8.09658 21.0174 7.79119C20.7841 7.48579 20.4835 7.2383 20.139 7.06795C19.7945 6.8976 19.4153 6.80897 19.031 6.80895L14.936 6.80895V2.99995C14.936 2.46952 14.7253 1.96081 14.3502 1.58574C13.9751 1.21066 13.4664 0.999949 12.936 0.999949L12.9 0.999949C12.5689 1 12.243 1.08226 11.9515 1.23935C11.66 1.39643 11.4121 1.62342 11.23 1.89995L7.2 8.02495Z"
+            stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>`;
+        } else {
+          // 거짓 아이콘
+          iconSvg = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+            xmlns="http://www.w3.org/2000/svg">
+            <path d="M5.7 18.298H4.5C3.67157 18.298 3 17.6264 3 16.798L3 6.50197C3 5.67355 3.67157 5.00197 4.5 5.00197H5.7C6.52843 5.00197 7.2 5.67355 7.2 6.50197L7.2 16.798C7.2 17.6264 6.52843 18.298 5.7 18.298Z"
+            stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M7.2 15.972L7.2 8C7.2 7.20435 7.51607 6.44129 8.07868 5.87868C8.64129 5.31607 9.40435 5 10.2 5L17.073 5C17.6216 5.00003 18.1549 5.18047 18.5907 5.51352C19.0266 5.84657 19.3408 6.31373 19.485 6.843L21.443 14.031C21.544 14.4018 21.5581 14.7909 21.4843 15.1681C21.4105 15.5453 21.2508 15.9004 21.0174 16.2058C20.7841 16.5112 20.4835 16.7586 20.139 16.929C19.7945 17.0994 19.4153 17.188 19.031 17.188H14.936V20.997C14.936 21.5274 14.7253 22.0361 14.3502 22.4112C13.9751 22.7863 13.4664 22.997 12.936 22.997L12.9 22.997C12.5689 22.9969 12.243 22.9147 11.9515 22.7576C11.66 22.6005 11.4121 22.3735 11.23 22.097L7.2 15.972Z"
+            stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>`;
+        }
+
+        li.innerHTML = `<span class="choice-icon">${iconSvg}</span> <span class="choice-text">${opt}</span>`;
+
+        // 선택 시 호출 (확인 버튼 미클릭 상태)
+        li.addEventListener("click", () => {
+          if (isConfirmed) return;
+          selectChoice(idx);
+        });
+
+        choicesListEl.appendChild(li);
+      });
+    }
+
+    // 함수: 선택한 보기 인덱스를 기록하고 UI에 선택 상태 표시
+    function selectChoice(idx) {
+      userAnswer = idx;
+      document.querySelectorAll(".choice-item").forEach(item => {
+        item.classList.remove("selected");
+      });
+      const selectedEl = document.querySelector(`.choice-item[data-index='${idx}']`);
+      if (selectedEl) {
+        selectedEl.classList.add("selected");
+      }
+    }
+
+    // 이벤트: 확인 버튼 클릭 시 정답 체크 후 결과 표시
+    confirmBtn.addEventListener("click", () => {
+      if (userAnswer === null) {
+        alert("답안을 선택해주세요!");
+        return;
+      }
+      if (isConfirmed) return;
+      isConfirmed = true;
+      const q = questions[currentQuestionIndex];
+      const correctIndex = q.correctIndex;
+      const selectedEl = document.querySelector(`.choice-item[data-index='${userAnswer}']`);
+      const correctEl = document.querySelector(`.choice-item[data-index='${correctIndex}']`);
+
+      if (userAnswer === correctIndex) {
+        selectedEl.classList.remove("selected");
+        selectedEl.classList.add("correct");
+        correctCount++;
+        showResultBar(true);
+      } else {
+        selectedEl.classList.remove("selected");
+        selectedEl.classList.add("wrong");
+        correctEl.classList.add("correct");
+        showResultBar(false);
+      }
+      confirmBtn.style.display = "none";
+      nextBtn.style.display = "inline-block";
+    });
+
+    // 이벤트: 다음 버튼 클릭 시 다음 문제 로드
+    nextBtn.addEventListener("click", () => {
+      currentQuestionIndex++;
+      if (currentQuestionIndex >= totalQuestions) {
+        showQuizComplete();
+        return;
+      }
+      loadQuestion();
+    });
+
+    // 함수: 정답 여부에 따라 결과 표시 영역 스타일 및 텍스트 설정
+    function showResultBar(isCorrect) {
+      if (isCorrect) {
+        resultBar.className = "result-bar correct";
+        resultText.innerHTML = `<span class="icon">✔</span> 정답`;
+        nextBtn.style.backgroundColor = "#28a745";
+      } else {
+        resultBar.className = "result-bar wrong";
+        resultText.innerHTML = `<span class="icon">✘</span> 오답`;
+        nextBtn.style.backgroundColor = "#dc3545";
+      }
+    }
+
+    // 함수: 진행바를 현재 문제 번호에 맞게 업데이트
+    function updateProgressBar() {
+      const ratio = (currentQuestionIndex + 1) / totalQuestions;
+      progressFill.style.width = `${ratio * 100}%`;
+    }
+
+    // 함수: 퀴즈 완료 화면으로 전환하여 최종 점수 표시
+    function showQuizComplete() {
+      quizWrapper.style.display = "none";
+      quizCompleteWrapper.style.display = "block";
+      finalScoreEl.textContent = `${correctCount}/${totalQuestions}`;
+    }
+
+    // ===== 추가 버튼 이벤트 =====
+    // 새로운 퀴즈 생성 (재시작) 버튼
+    document.getElementById("createNewQuizBtn").addEventListener("click", () => {
+      currentQuestionIndex = 0;
+      correctCount = 0;
+      quizCompleteWrapper.style.display = "none";
+      quizWrapper.style.display = "block";
+      loadQuestion();
+    });
+
+    // 홈으로 가기 버튼 (메인 페이지 업로드 섹션으로 이동)
+    document.getElementById("goHomeBtn").addEventListener("click", () => {
+      window.location.href = "main.html#upload";
+    });
+
+    // 완료 화면의 재시작 버튼
+    document.getElementById("btnRestart").addEventListener("click", () => {
+      currentQuestionIndex = 0;
+      correctCount = 0;
+      quizCompleteWrapper.style.display = "none";
+      quizWrapper.style.display = "block";
+      loadQuestion();
+    });
+
+    // 공유 버튼 (기능 미구현)
+    document.getElementById("btnShare").addEventListener("click", () => {
+      alert("공유 기능은 아직 미구현!");
+    });
+  </script>
+</body>
+</html>
