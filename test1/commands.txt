@@ -1,0 +1,12 @@
+#requirements.txt 생성 명령어
+pip freeze > requirements.txt
+
+#requirements.txt 설치 명령어
+pip install -r requirements.txt
+
+# git push 순서
+git init
+git add [파일 / 디렉토리 경로]
+git commit -m "[커밋 메세지]"
+git branch -m [브랜치명]
+git push origin [브랜치명]래

@@ -1,0 +1,144 @@
+/* 📌 전체 배경 설정 */
+body {
+    background: #f8f9fa;
+}
+
+/* ✅ 큰 화면 스타일 */
+.detail-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* ✅ 히스토리 제목 */
+.history-title {
+    font-size: 2.2rem;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+    text-align: left;
+    color: #1b1b1b;
+}
+
+/* ✅ 히스토리 내용 */
+.history-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+/* ✅ 개별 퀴즈 카드 */
+.quiz-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+.quiz-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.15); /* ✅ 퀴즈 카드 호버 시 그림자 강조 */
+}
+
+/* ✅ 점수별 보더 색상 */
+.quiz-card.score-high {
+    border-left: 30px solid #FFB3B3; /* 연한 빨강 (상) */
+}
+
+.quiz-card.score-medium {
+    border-left: 30px solid #FF6666; /* 중간 빨강 (중) */
+}
+
+.quiz-card.score-low {
+    border-left: 30px solid #CC0000; /* 진한 빨강 (하) */
+}
+
+/* ✅ 문제 과목명 스타일 */
+.quiz-subject {
+    font-size: 1.3rem;
+    font-weight: bold;
+}
+
+/* ✅ 버튼 스타일 */
+.quiz-btn {
+    padding: 0.8rem 1.2rem;
+    font-size: 1.1rem;
+    font-weight: bold;
+    border-radius: 8px;
+    min-width: 100px;
+    text-align: center;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+/* ✅ 버튼 색상 */
+.quiz-btn.type {
+    background: #FFA726; /* 연한 주황 */
+}
+
+.quiz-btn.score {
+    background: #FB8C00; /* 중간 주황 */
+}
+
+.quiz-btn.retry {
+    background: #EF6C00; /* 진한 주황 */
+}
+
+/* ✅ 버튼 hover 효과 */
+.quiz-btn:hover {
+    opacity: 0.85;
+}
+
+/* ✅ 히스토리 제목 + 등급 컨테이너 */
+.detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1100px;
+}
+
+/* ✅ 등급 안내 컨테이너 */
+.grade-info {
+    display: flex;
+    gap: 1.2rem;
+    align-items: center;
+}
+
+/* ✅ 개별 등급 안내 */
+.grade-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #333;
+}
+
+/* ✅ 원형 등급 색상 */
+.grade-circle {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+/* ✅ 각 등급별 색상 */
+.grade-circle.high {
+    background: #FFB3B3; /* 연한 빨강 */
+}
+
+.grade-circle.medium {
+    background: #FF6666; /* 중간 빨강 */
+}
+
+.grade-circle.low {
+    background: #CC0000; /* 진한 빨강 */
+}
+

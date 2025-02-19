@@ -1,0 +1,264 @@
+/* 📌 전체 배경 설정 */
+body {
+    background: #f8f9fa; /* 전체 배경색 */
+    overflow-x: hidden; /* ✅ 가로 스크롤 방지 */
+    margin: 0;
+    padding: 0;
+}
+
+/* 📌 기본적인 레이아웃 컨테이너 설정 */
+* {
+    box-sizing: border-box; /* ✅ 요소 크기 계산 시 padding & border 포함 */
+    margin: 0;
+    padding: 0;
+}
+
+/* 📌 히스토리 헤더 */
+.history-header {
+    background: #F49303;
+    color: white;
+    padding: 2rem 3rem;
+    width: 100%;
+    max-width: 100vw; /* ✅ 최대 너비 제한 */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+}
+
+/* 📌 히스토리 헤더 텍스트 */
+.header-text {
+    max-width: 1100px;
+}
+
+.history-title {
+    font-size: 3rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.history-subtitle {
+    font-size: 1.2rem;
+    opacity: 0.9;
+}
+
+/* 📌 검색창 컨테이너 - 우측 정렬 */
+.search-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    width: auto;
+    position: relative;
+    max-width: 100%;
+}
+
+/* ✅ 검색 바 배경 (입력 필드 크기에 맞춰 조정) */
+.search-background {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 310px; /* ✅ 검색 입력 필드보다 약간 넓게 설정 */
+    height: 50px; /* ✅ 높이 맞춤 */
+    background: #f1f2f2;
+    border-radius: 12px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
+    z-index: -1;
+}
+
+/* ✅ 검색 입력 필드와 버튼을 감싸는 박스 */
+.search-wrapper {
+    display: flex;
+    align-items: center;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 0.5rem 1rem;
+    width: 280px; /* ✅ 검색 입력 필드 크기 조정 */
+    height: 45px; /* ✅ 높이 맞춰서 정렬 */
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease-in-out;
+    position: relative;
+    z-index: 1;
+}
+
+/* ✅ 검색 입력 필드 스타일 */
+.search-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 1rem;
+    padding: 0.5rem;
+    background: transparent;
+}
+
+/* ✅ 검색 버튼 (돋보기 아이콘) */
+.search-btn {
+    background: #f49303;
+    color: #f49303;
+    border: none;
+    padding: 0.8rem 1rem;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: all 0.3s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ✅ 돋보기 아이콘 스타일 */
+.search-btn i {
+    font-size: 1.2rem;
+    color: inherit; /* ✅ 버튼 색상과 동일하게 설정 */
+}
+
+/* ✅ 검색 버튼 hover 효과 */
+.search-btn:hover {
+    background: #ffe0b2;
+    color: #d67d02;
+    transform: scale(1.05);
+}
+
+/* ✅ 입력 필드 포커스 시 */
+.search-wrapper:focus-within {
+    border-color: #f49303;
+    box-shadow: 0px 4px 8px rgba(244, 147, 3, 0.2);
+}
+
+
+/* 📌 헤더와 리스트 사이 점선 구분선 */
+.header-divider {
+    border-bottom: 2px dashed #ccc;
+    margin: 2rem auto;
+    width: 100%;
+}
+
+/* 📌 히스토리 리스트 */
+.history-container {
+    background: #f8f9fa;
+    padding: 2rem 1.5rem;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+/* 📌 날짜별 리스트 */
+.history-day {
+    background: #f7ba5e;
+    padding: 1.5rem;
+    border-radius: 16px;
+    margin-bottom: 1.5rem;
+    opacity: 0.6;
+    transform: scale(0.9);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15); /* ✅ 리스트 박스 그림자 추가 */
+}
+
+/* 📌 활성화된 리스트 */
+.history-day.active {
+    background: white;
+    opacity: 1;
+    transform: scale(1.05);
+    border-left: 8px solid #f49303; /* 좌측 색 */
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2); /* ✅ 활성화된 리스트 그림자 더 강조 */
+}
+
+/* 📌 선택되지 않은 리스트 요소들 비활성화 */
+.history-day:not(.active) {
+    pointer-events: none;
+}
+
+.history-day:not(.active) .quiz-card {
+    background: #f7ba5e;
+    color: white;
+    border-left: 5px solid #f7ba5e;
+}
+
+/* 📌 선택되지 않은 리스트 내부 버튼 색상 통일 */
+.history-day:not(.active) .quiz-actions .quiz-btn {
+    background: #f7ba5e;
+    border-color: white;
+    color: white;
+}
+
+/* 📌 날짜 글씨 스타일 변경 */
+.history-date {
+    font-size: 1.6rem;
+    font-weight: bold;
+}
+
+.history-day:not(.active) .history-date {
+    color: white;
+}
+
+/* 📌 개별 퀴즈 카드 */
+.quiz-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: transform 0.3s ease;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* ✅ 퀴즈 카드 그림자 추가 */
+}
+
+.quiz-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.15); /* ✅ 퀴즈 카드 호버 시 그림자 강조 */
+}
+
+/* 📌 과목명 스타일 */
+.quiz-subject {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+/* 📌 버튼 정렬 */
+.quiz-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* 📌 버튼 스타일 */
+.quiz-btn {
+    padding: 0.6rem 1rem;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    background: #f49303;
+    color: white;
+    transition: all 0.3s ease-in-out;
+    text-decoration: none; /* ✅ 다시 풀기 버튼 밑줄 제거 */
+}
+
+.quiz-btn:hover {
+    background: #d67d02;
+}
+
+/* ✅ 선택된 리스트의 버튼 색상 변경 */
+.history-day.active .quiz-actions .type {
+    background: #f69927; /* 문제 유형 버튼 색상 */
+}
+
+.history-day.active .quiz-actions .score {
+    background: #f68903; /* 점수 버튼 색상 */
+}
+
+/* ✅ 선택된 버튼 hover 효과 */
+.history-day.active .quiz-actions .quiz-btn:hover {
+    opacity: 0.85;
+}
+/* 📌 문제 유형, 문제 점수 버튼 크기 4지선다 크기로 고정 */
+.quiz-actions .quiz-btn {
+    padding: 1rem 1.5rem; /* ✅ 버튼 크기 증가 */
+    font-size: 1.2rem;
+    font-weight: bold;
+    border-radius: 12px;
+    min-width: 140px; /* ✅ 버튼 너비 고정 */
+    text-align: center;
+}

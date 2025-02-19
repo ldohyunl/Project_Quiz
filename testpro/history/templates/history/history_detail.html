@@ -1,0 +1,58 @@
+{% load static %}
+
+{% block content %}
+<!-- 📌 히스토리 상세 스타일 적용 -->
+<link rel="stylesheet" href="{% static 'history/h_detail.css' %}">
+
+<!-- ✅ 큰 화면 스타일로 히스토리 디테일 표시 -->
+<div class="detail-container">
+        <!-- ✅ 히스토리 제목 + 상중하 안내 컨테이너 -->
+    <div class="detail-header">
+        <h1 class="history-title">{{ selected_date|date:"Y년 m월 d일" }}</h1>
+
+        <!-- ✅ 상·중·하 안내 컨테이너 -->
+        <div class="grade-info">
+            <div class="grade-item">
+                <span class="grade-circle high"></span>
+                <span class="grade-text">오답 2개 이하</span>
+            </div>
+            <div class="grade-item">
+                <span class="grade-circle medium"></span>
+                <span class="grade-text">오답 5개 이하</span>
+            </div>
+            <div class="grade-item">
+                <span class="grade-circle low"></span>
+                <span class="grade-text">오답 6개 이상</span>
+            </div>
+        </div>
+    </div>
+    <hr>
+    <div class="history-content">
+        {% for quiz in quizzes %}
+        <div class="quiz-card
+            {% if quiz.score >= 8 %} score-high
+            {% elif quiz.score >= 5 %} score-medium
+            {% else %} score-low
+            {% endif %}">
+            <div class="quiz-info">
+                <span class="quiz-subject">{{ quiz.file_name }}</span>
+            </div>
+            <div class="quiz-actions">
+                <button class="quiz-btn type">
+                    {% if quiz.question_type == "Short" %} 단답형
+                    {% elif quiz.question_type == "MCQ" %} 4지선다
+                    {% elif quiz.question_type == "OX" %} O/X
+                    {% else %} {{ quiz.question_type }}
+                    {% endif %}
+                </button>
+                <button class="quiz-btn score">{{ quiz.score|default:"-" }}점</button>
+                <a href="{% url 'quiz_retake' quiz.id %}" class="quiz-btn retry">다시 풀기</a>
+            </div>
+        </div>
+        {% empty %}
+        <p>해당 날짜에 생성된 퀴즈가 없습니다.</p>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}
