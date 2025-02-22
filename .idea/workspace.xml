@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="8846df3c-999d-46f2-826e-438da1b689d1" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/Project_Quiz.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/testpro/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/testpro/quiz_app/sep_views/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/testpro/quiz_app/sep_views/dboperations.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/testpro/quiz_app/sep_views/extract_files.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/testpro/quiz_app/sep_views/prompt_builder.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/testpro/quiz_app/sep_views/quiz_parser.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/testpro/quiz_app/sep_views/quiz_view.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/testpro/quiz_app/sep_views/upload_view.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/testpro/mysite/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/testpro/mysite/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/testpro/quiz_app/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/testpro/quiz_app/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/testpro/quiz_app/templates/quiz_app/example.html" beforeDir="false" afterPath="$PROJECT_DIR$/testpro/quiz_app/templates/quiz_app/example.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/testpro/quiz_app/templates/quiz_app/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/testpro/quiz_app/templates/quiz_app/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/testpro/quiz_app/templates/quiz_app/munje_shortanswer.html" beforeDir="false" afterPath="$PROJECT_DIR$/testpro/quiz_app/templates/quiz_app/munje_shortanswer.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/testpro/quiz_app/templates/quiz_app/munje_truefalse.html" beforeDir="false" afterPath="$PROJECT_DIR$/testpro/quiz_app/templates/quiz_app/munje_truefalse.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/testpro/quiz_app/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/testpro/quiz_app/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/testpro/quiz_app/views.py" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="HTML File" />
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="quiz5" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;jwgith&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/ldohyunl/Project_Quiz.git&quot;,
+    &quot;accountId&quot;: &quot;c9c467a9-f05c-431a-a91b-f9a89b66f70e&quot;
+  }
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 7
+}</component>
+  <component name="ProjectId" id="2spRB5Q1TFz4YKyCnDfjQlttOtV" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "DefaultHtmlFileTemplate": "HTML File",
+    "Python.Django.executor": "Run",
+    "Python.ex1.executor": "Run",
+    "Python.main.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "realfinal",
+    "last_opened_file_path": "/Users/jaewoo/PycharmProjects/PythonProject/Project_Quiz/testpro/quiz_app/views",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/testpro/quiz_app/views" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/testpro/quiz_app/views" />
+      <recent name="$PROJECT_DIR$/testpro/quiz_app/static/quiz_app" />
+      <recent name="$PROJECT_DIR$/project_quiz" />
+      <recent name="$PROJECT_DIR$/project_quiz/quiz_app/templates/quiz_app" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Python.Django">
+    <configuration name="Django" type="PythonConfigurationType" factoryName="Python">
+      <module name="Project_Quiz" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+        <env name="PATH" value="/opt/homebrew/opt/mysql-client/bin:$PATH" />
+        <env name="LDFLAGS" value="-L/opt/homebrew/opt/mysql-client/lib" />
+        <env name="CPPFLAGS" value="-I/opt/homebrew/opt/mysql-client/include" />
+        <env name="PKG_CONFIG_PATH" value="/opt/homebrew/opt/mysql-client/lib/pkgconfig" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="SDK_NAME" value="Python 3.10 virtualenv at ~/PycharmProjects/PythonProject/Project_Quiz/venvs/mysite" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/project_quiz" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/project_quiz/manage.py" />
+      <option name="PARAMETERS" value="runserver" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="ex1" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="Project_Quiz" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/ex1.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="main" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
+      <module name="Project_Quiz" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Python.Django" />
+      <item itemvalue="Python.main" />
+      <item itemvalue="Python.ex1" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.ex1" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-python-sdk-495700d161d3-aa17d162503b-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-243.22562.220" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="8846df3c-999d-46f2-826e-438da1b689d1" name="Changes" comment="" />
+      <created>1739150390502</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1739150390502</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>

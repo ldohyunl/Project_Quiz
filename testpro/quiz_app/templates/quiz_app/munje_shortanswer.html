@@ -6,211 +6,221 @@
 <html lang="ko">
 {% load static %}
 <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8"/>
     <title>단답형 퀴즈 - 예시</title>
     <!-- 외부 CSS 파일 연결 (단답형 퀴즈 스타일) -->
-  <link rel="stylesheet" href="{% static 'quiz_app/munje_shortanswerStyles.css' %}">
+    <link rel="stylesheet" href="{% static 'quiz_app/munje_shortanswerStyles.css' %}">
 
 </head>
 <body>
-    <!-- ==========================================
-         퀴즈 인터페이스 영역
-         - 퀴즈 헤더 (아이콘, 진행바, 문제 번호)
-         - 퀴즈 본문 (문제, 단답형 입력 필드)
-    =========================================== -->
-    <div class="quiz-wrapper" id="quizWrapper">
-        <!-- 퀴즈 헤더 -->
-        <div class="quiz-header">
-            <div class="quiz-icon">Q</div>
-            <div class="progress-bar">
-                <div class="progress-fill" id="progressFill"></div>
-            </div>
-            <div class="question-count" id="questionCountText">1/10</div>
+<form id="csrfTokenForm">
+    {% csrf_token %}
+</form>
+<!-- ==========================================
+     퀴즈 인터페이스 영역
+     - 퀴즈 헤더 (아이콘, 진행바, 문제 번호)
+     - 퀴즈 본문 (문제, 단답형 입력 필드)
+=========================================== -->
+<div class="quiz-wrapper" id="quizWrapper">
+    <!-- 퀴즈 헤더 -->
+    <div class="quiz-header">
+        <div class="quiz-icon">Q</div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
         </div>
-        <!-- 퀴즈 본문 -->
-        <div class="quiz-body">
-            <div class="question-number" id="questionNumber"></div>
-            <div class="question-text" id="questionText"></div>
-            <!-- 단답형 답안 입력 필드 -->
-            <input type="text" class="short-answer-input" id="userAnswerInput" placeholder="" />
-        </div>
-        <!-- 결과 표시 영역 -->
-        <div class="result-bar" id="resultBar">
-            <div class="result-info" id="resultText"></div>
-            <div class="btn-box">
-                <button class="quiz-btn confirm" id="confirmBtn">확인</button>
-                <button class="quiz-btn next" id="nextBtn" style="display:none;">계속</button>
-            </div>
+        <div class="question-count" id="questionCountText">1/10</div>
+    </div>
+    <!-- 퀴즈 본문 -->
+    <div class="quiz-body">
+        <div class="question-number" id="questionNumber"></div>
+        <div class="question-text" id="questionText"></div>
+        <!-- 단답형 답안 입력 필드 -->
+        <input type="text" class="short-answer-input" id="userAnswerInput" placeholder=""/>
+    </div>
+    <!-- 결과 표시 영역 -->
+    <div class="result-bar" id="resultBar">
+        <div class="result-info" id="resultText"></div>
+        <div class="btn-box">
+            <button class="quiz-btn confirm" id="confirmBtn">확인</button>
+            <button class="quiz-btn next" id="nextBtn" style="display:none;">계속</button>
         </div>
     </div>
+</div>
 
-    <!-- ==========================================
-         퀴즈 완료 영역
-         - 최종 점수 표시 및 재시작, 공유, 홈 이동 버튼 제공
-    =========================================== -->
-    <div class="quiz-complete-wrapper" id="quizCompleteWrapper">
-        <div class="quiz-complete-icon">★</div>
-        <h2 class="quiz-complete-title">퀴즈 완료</h2>
-        <div class="quiz-complete-score" id="finalScore">0/10</div>
-        <div class="quiz-complete-button-row">
-            <div class="btn-icon" id="btnRestart">
-                <div>↩</div>
-                <span>재시작</span>
-            </div>
-            <div class="btn-icon" id="btnShare">
-                <div>🔗</div>
-                <span>공유</span>
-            </div>
+<!-- ==========================================
+     퀴즈 완료 영역
+     - 최종 점수 표시 및 재시작, 공유, 홈 이동 버튼 제공
+=========================================== -->
+<div class="quiz-complete-wrapper" id="quizCompleteWrapper">
+    <div class="quiz-complete-icon">★</div>
+    <h2 class="quiz-complete-title">퀴즈 완료</h2>
+    <div class="quiz-complete-score" id="finalScore">0/10</div>
+    <div class="quiz-complete-button-row">
+        <div class="btn-icon" id="btnRestart">
+            <div>↩</div>
+            <span>재시작</span>
         </div>
-        <!-- 액션 버튼: 새로운 퀴즈 생성 및 홈으로 이동 -->
-        <button class="quiz-complete-restart-btn" id="createNewQuizBtn">새로운 퀴즈 생성</button>
-        <button class="quiz-complete-home-btn" id="goHomeBtn">홈으로 가기</button>
+        <div class="btn-icon" id="btnShare">
+            <div>🔗</div>
+            <span>공유</span>
+        </div>
     </div>
+    <!-- 액션 버튼: 새로운 퀴즈 생성 및 홈으로 이동 -->
+    <button class="quiz-complete-home-btn" id="goHomeBtn">홈으로 가기</button>
+</div>
 
-    <!-- ==========================================
-         자바스크립트 로직 영역
-         - 단답형 퀴즈 데이터, 전역 변수, DOM 요소, 이벤트 및 함수 정의
-    =========================================== -->
-    <script>
-        // Django 뷰에서 전달한 questions 데이터를 사용 (Django 템플릿 변수를 이용)
-        const questions = {{ questions|safe }};
+<!-- ==========================================
+     자바스크립트 로직 영역
+     - 단답형 퀴즈 데이터, 전역 변수, DOM 요소, 이벤트 및 함수 정의
+=========================================== -->
+<script>
+    // Django 뷰에서 전달한 questions 데이터를 사용 (Django 템플릿 변수를 이용)
+    const questions = {{ questions|safe }};
 
-        // ===== 전역 변수 =====
-        let currentQuestionIndex = 0;  // 현재 문제 번호
-        const totalQuestions = questions.length;
-        let correctCount = 0;         // 정답 개수
-        let isConfirmed = false;      // 현재 문제 확인 여부
+    // ===== 전역 변수 =====
+    let currentQuestionIndex = 0;  // 현재 문제 번호
+    const totalQuestions = questions.length;
+    let correctCount = 0;         // 정답 개수
+    let isConfirmed = false;      // 현재 문제 확인 여부
 
-        // ===== DOM 요소 참조 =====
-        const quizWrapper = document.getElementById("quizWrapper");
-        const quizCompleteWrapper = document.getElementById("quizCompleteWrapper");
-        const questionCountText = document.getElementById("questionCountText");
-        const progressFill = document.getElementById("progressFill");
-        const questionNumberEl = document.getElementById("questionNumber");
-        const questionTextEl = document.getElementById("questionText");
-        const userAnswerInput = document.getElementById("userAnswerInput");
-        const confirmBtn = document.getElementById("confirmBtn");
-        const nextBtn = document.getElementById("nextBtn");
-        const resultBar = document.getElementById("resultBar");
-        const resultText = document.getElementById("resultText");
-        const finalScoreEl = document.getElementById("finalScore");
+    // ===== DOM 요소 참조 =====
+    const quizWrapper = document.getElementById("quizWrapper");
+    const quizCompleteWrapper = document.getElementById("quizCompleteWrapper");
+    const questionCountText = document.getElementById("questionCountText");
+    const progressFill = document.getElementById("progressFill");
+    const questionNumberEl = document.getElementById("questionNumber");
+    const questionTextEl = document.getElementById("questionText");
+    const userAnswerInput = document.getElementById("userAnswerInput");
+    const confirmBtn = document.getElementById("confirmBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const resultBar = document.getElementById("resultBar");
+    const resultText = document.getElementById("resultText");
+    const finalScoreEl = document.getElementById("finalScore");
 
-        // ===== 초기 퀴즈 로드 =====
+    // ===== 초기 퀴즈 로드 =====
+    loadQuestion();
+
+    // 함수: 현재 문제를 로드하여 화면에 표시
+    function loadQuestion() {
+        updateProgressBar();
+        questionCountText.textContent = `${currentQuestionIndex + 1}/${totalQuestions}`;
+        isConfirmed = false;
+        userAnswerInput.value = "";
+        userAnswerInput.disabled = false;
+        // 이전 문제의 정답/오답 스타일 제거
+        userAnswerInput.classList.remove("correct-answer", "wrong-answer");
+
+        confirmBtn.style.display = "inline-block";
+        nextBtn.style.display = "none";
+        resultBar.className = "result-bar";
+        resultText.innerHTML = "";
+
+        const q = questions[currentQuestionIndex];
+        questionNumberEl.textContent = `문제 ${currentQuestionIndex + 1}`;
+        questionTextEl.textContent = q.text;
+    }
+
+    // 이벤트: 확인 버튼 클릭 시 답안 채점 및 결과 표시
+    confirmBtn.addEventListener("click", () => {
+        if (isConfirmed) return;
+        const userInput = userAnswerInput.value.trim();
+        if (!userInput) {
+            alert("답안을 입력해주세요!");
+            return;
+        }
+        isConfirmed = true;
+        userAnswerInput.disabled = true;
+
+        const q = questions[currentQuestionIndex];
+        const correctAns = q.answer.trim();
+
+        if (userInput === correctAns) {
+            // 정답일 경우: 초록색 스타일 적용
+            userAnswerInput.classList.add("correct-answer");
+            correctCount++;
+            showResultBar(true, correctAns);
+        } else {
+            // 오답일 경우: 빨간색 스타일 적용
+            userAnswerInput.classList.add("wrong-answer");
+            showResultBar(false, correctAns);
+        }
+
+        confirmBtn.style.display = "none";
+        nextBtn.style.display = "inline-block";
+    });
+
+    // 이벤트: 다음 버튼 클릭 시 다음 문제 로드
+    nextBtn.addEventListener("click", () => {
+        currentQuestionIndex++;
+        if (currentQuestionIndex >= totalQuestions) {
+            showQuizComplete();
+            return;
+        }
         loadQuestion();
+    });
 
-        // 함수: 현재 문제를 로드하여 화면에 표시
-        function loadQuestion() {
-            updateProgressBar();
-            questionCountText.textContent = `${currentQuestionIndex + 1}/${totalQuestions}`;
-            isConfirmed = false;
-            userAnswerInput.value = "";
-            userAnswerInput.disabled = false;
-            // 이전 문제의 정답/오답 스타일 제거
-            userAnswerInput.classList.remove("correct-answer", "wrong-answer");
-
-            confirmBtn.style.display = "inline-block";
-            nextBtn.style.display = "none";
-            resultBar.className = "result-bar";
-            resultText.innerHTML = "";
-
-            const q = questions[currentQuestionIndex];
-            questionNumberEl.textContent = `문제 ${currentQuestionIndex + 1}`;
-            questionTextEl.textContent = q.text;
+    // 함수: 정답 여부에 따라 결과 영역에 스타일 및 정답 표시
+    function showResultBar(isCorrect, correctAns) {
+        if (isCorrect) {
+            resultBar.className = "result-bar correct";
+            resultText.innerHTML = `<span class="icon">✔</span> 정답: ${correctAns}`;
+            nextBtn.style.backgroundColor = "#28a745";
+        } else {
+            resultBar.className = "result-bar wrong";
+            resultText.innerHTML = `<span class="icon">✘</span> 정답: ${correctAns}`;
+            nextBtn.style.backgroundColor = "#dc3545";
         }
+    }
 
-        // 이벤트: 확인 버튼 클릭 시 답안 채점 및 결과 표시
-        confirmBtn.addEventListener("click", () => {
-            if (isConfirmed) return;
-            const userInput = userAnswerInput.value.trim();
-            if (!userInput) {
-                alert("답안을 입력해주세요!");
-                return;
-            }
-            isConfirmed = true;
-            userAnswerInput.disabled = true;
+    // 함수: 진행바를 현재 문제 번호에 맞게 업데이트
+    function updateProgressBar() {
+        const ratio = (currentQuestionIndex + 1) / totalQuestions;
+        progressFill.style.width = `${ratio * 100}%`;
+    }
 
-            const q = questions[currentQuestionIndex];
-            const correctAns = q.answer.trim();
+    // 함수: 퀴즈 완료 화면으로 전환하고 최종 점수 표시
+     function showQuizComplete() {
+      quizWrapper.style.display = "none";
+      quizCompleteWrapper.style.display = "block";
+      finalScoreEl.textContent = `${correctCount}/${totalQuestions}`;
 
-            if (userInput === correctAns) {
-                // 정답일 경우: 초록색 스타일 적용
-                userAnswerInput.classList.add("correct-answer");
-                correctCount++;
-                showResultBar(true, correctAns);
-            } else {
-                // 오답일 경우: 빨간색 스타일 적용
-                userAnswerInput.classList.add("wrong-answer");
-                showResultBar(false, correctAns);
-            }
+      fetch("/save-quiz-score/", {
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": getCSRFToken()
+          },
+          body: JSON.stringify({ score: correctCount })
+      }).then(response => response.json())
+        .then(data => console.log("Score saved:", data))
+        .catch(error => console.error("Error saving score:", error));
+    }
 
-            confirmBtn.style.display = "none";
-            nextBtn.style.display = "inline-block";
-        });
+    function getCSRFToken() {
+      return document.querySelector('[name=csrfmiddlewaretoken]')?.value || "";
+    }
 
-        // 이벤트: 다음 버튼 클릭 시 다음 문제 로드
-        nextBtn.addEventListener("click", () => {
-            currentQuestionIndex++;
-            if (currentQuestionIndex >= totalQuestions) {
-                showQuizComplete();
-                return;
-            }
-            loadQuestion();
-        });
+    // ===== 추가 버튼 이벤트 =====
+    // 새로운 퀴즈 생성 (재시작) 버튼
+    document.getElementById("createNewQuizBtn").addEventListener("click", () => {
+        currentQuestionIndex = 0;
+        correctCount = 0;
+        quizCompleteWrapper.style.display = "none";
+        quizWrapper.style.display = "block";
+        loadQuestion();
+    });
 
-        // 함수: 정답 여부에 따라 결과 영역에 스타일 및 정답 표시
-        function showResultBar(isCorrect, correctAns) {
-            if (isCorrect) {
-                resultBar.className = "result-bar correct";
-                resultText.innerHTML = `<span class="icon">✔</span> 정답: ${correctAns}`;
-                nextBtn.style.backgroundColor = "#28a745";
-            } else {
-                resultBar.className = "result-bar wrong";
-                resultText.innerHTML = `<span class="icon">✘</span> 정답: ${correctAns}`;
-                nextBtn.style.backgroundColor = "#dc3545";
-            }
-        }
 
-        // 함수: 진행바를 현재 문제 번호에 맞게 업데이트
-        function updateProgressBar() {
-            const ratio = (currentQuestionIndex + 1) / totalQuestions;
-            progressFill.style.width = `${ratio * 100}%`;
-        }
 
-        // 함수: 퀴즈 완료 화면으로 전환하고 최종 점수 표시
-        function showQuizComplete() {
-            quizWrapper.style.display = "none";
-            quizCompleteWrapper.style.display = "block";
-            finalScoreEl.textContent = `${correctCount}/${totalQuestions}`;
-        }
+// "홈으로 가기" 버튼 클릭 이벤트 등록
+document.getElementById("goHomeBtn").addEventListener("click", () => {
+window.location.href = "/";  // 메인 페이지로 이동
+});
 
-        // ===== 추가 버튼 이벤트 =====
-        // 새로운 퀴즈 생성 (재시작) 버튼
-        document.getElementById("createNewQuizBtn").addEventListener("click", () => {
-            currentQuestionIndex = 0;
-            correctCount = 0;
-            quizCompleteWrapper.style.display = "none";
-            quizWrapper.style.display = "block";
-            loadQuestion();
-        });
-
-        // 홈으로 가기 버튼 (메인 페이지 업로드 섹션으로 이동)
-        document.getElementById("goHomeBtn").addEventListener("click", () => {
-            window.location.href = "main.html#upload";
-        });
-
-        // 완료 화면의 재시작 버튼
-        document.getElementById("btnRestart").addEventListener("click", () => {
-            currentQuestionIndex = 0;
-            correctCount = 0;
-            quizCompleteWrapper.style.display = "none";
-            quizWrapper.style.display = "block";
-            loadQuestion();
-        });
-
-        // 공유 버튼 (기능 미구현)
-        document.getElementById("btnShare").addEventListener("click", () => {
-            alert("공유 기능은 아직 미구현!");
-        });
-    </script>
+    // 공유 버튼 (기능 미구현)
+    document.getElementById("btnShare").addEventListener("click", () => {
+        alert("공유 기능은 아직 미구현!");
+    });
+</script>
 </body>
 </html>

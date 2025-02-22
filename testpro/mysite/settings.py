@@ -28,6 +28,7 @@ SECRET_KEY = "django-insecure-$u2@)f1wpu_31d_&u%#62k6(*h==p*z5p)fxg4kdj%$bh_90^u
 DEBUG = True
 
 ALLOWED_HOSTS = []
+# ALLOWED_HOSTS = ['*']
 
 # ==== env 파일 로드 
 load_dotenv(BASE_DIR / ".env")

@@ -6,73 +6,75 @@
 <html lang="ko">
 {% load static %}
 <head>
-  <meta charset="UTF-8" />
-  <title>참/거짓 퀴즈 - 예시</title>
-  <!-- 외부 CSS 파일 연결 (참/거짓 퀴즈 스타일) -->
-  <link rel="stylesheet" href="{% static 'quiz_app/munje_truefalseStyles.css' %}">
+    <meta charset="UTF-8"/>
+    <title>참/거짓 퀴즈 - 예시</title>
+    <!-- 외부 CSS 파일 연결 (참/거짓 퀴즈 스타일) -->
+    <link rel="stylesheet" href="{% static 'quiz_app/munje_truefalseStyles.css' %}">
 
 </head>
 <body>
-  <!-- ==========================================
-       퀴즈 인터페이스 영역
-       - 퀴즈 헤더 (아이콘, 진행바, 문제 번호)
-       - 퀴즈 본문 (문제, 참/거짓 보기)
-       - 결과 표시 영역 (정답/오답, 버튼)
-  =========================================== -->
-  <div class="quiz-wrapper" id="quizWrapper">
+<form id="csrfTokenForm">
+    {% csrf_token %}
+</form>
+<!-- ==========================================
+     퀴즈 인터페이스 영역
+     - 퀴즈 헤더 (아이콘, 진행바, 문제 번호)
+     - 퀴즈 본문 (문제, 참/거짓 보기)
+     - 결과 표시 영역 (정답/오답, 버튼)
+=========================================== -->
+<div class="quiz-wrapper" id="quizWrapper">
     <!-- 퀴즈 헤더 -->
     <div class="quiz-header">
-      <div class="quiz-icon">Q</div>
-      <div class="progress-bar">
-        <div class="progress-fill" id="progressFill"></div>
-      </div>
-      <div class="question-count" id="questionCountText">1/10</div>
+        <div class="quiz-icon">Q</div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="question-count" id="questionCountText">1/10</div>
     </div>
     <!-- 퀴즈 본문 -->
     <div class="quiz-body">
-      <div class="question-number" id="questionNumber"></div>
-      <div class="question-text" id="questionText"></div>
-      <!-- 참/거짓 보기 리스트 -->
-      <ul class="choices" id="choicesList"></ul>
+        <div class="question-number" id="questionNumber"></div>
+        <div class="question-text" id="questionText"></div>
+        <!-- 참/거짓 보기 리스트 -->
+        <ul class="choices" id="choicesList"></ul>
     </div>
     <!-- 결과 표시 영역 -->
     <div class="result-bar" id="resultBar">
-      <div class="result-info" id="resultText"></div>
-      <div class="btn-box">
-        <button class="quiz-btn confirm" id="confirmBtn">확인</button>
-        <button class="quiz-btn next" id="nextBtn" style="display:none;">계속</button>
-      </div>
+        <div class="result-info" id="resultText"></div>
+        <div class="btn-box">
+            <button class="quiz-btn confirm" id="confirmBtn">확인</button>
+            <button class="quiz-btn next" id="nextBtn" style="display:none;">계속</button>
+        </div>
     </div>
-  </div>
+</div>
 
-  <!-- ==========================================
-       퀴즈 완료 영역
-       - 최종 점수 표시 및 재시작, 공유, 홈 이동 버튼 제공
-  =========================================== -->
-  <div class="quiz-complete-wrapper" id="quizCompleteWrapper">
+<!-- ==========================================
+     퀴즈 완료 영역
+     - 최종 점수 표시 및 재시작, 공유, 홈 이동 버튼 제공
+=========================================== -->
+<div class="quiz-complete-wrapper" id="quizCompleteWrapper">
     <div class="quiz-complete-icon">★</div>
     <h2 class="quiz-complete-title">퀴즈 완료</h2>
     <div class="quiz-complete-score" id="finalScore">0/10</div>
     <div class="quiz-complete-button-row">
-      <div class="btn-icon" id="btnRestart">
-        <div>↩</div>
-        <span>재시작</span>
-      </div>
-      <div class="btn-icon" id="btnShare">
-        <div>🔗</div>
-        <span>공유</span>
-      </div>
+        <div class="btn-icon" id="btnRestart">
+            <div>↩</div>
+            <span>재시작</span>
+        </div>
+        <div class="btn-icon" id="btnShare">
+            <div>🔗</div>
+            <span>공유</span>
+        </div>
     </div>
     <!-- 액션 버튼: 새로운 퀴즈 생성 및 홈으로 이동 -->
-    <button class="quiz-complete-restart-btn" id="createNewQuizBtn">새로운 퀴즈 생성</button>
     <button class="quiz-complete-home-btn" id="goHomeBtn">홈으로 가기</button>
-  </div>
+</div>
 
-  <!-- ==========================================
-       자바스크립트 로직 영역
-       - 참/거짓 퀴즈 데이터, 전역 변수, DOM 요소, 이벤트 및 함수 정의
-  =========================================== -->
-  <script>
+<!-- ==========================================
+     자바스크립트 로직 영역
+     - 참/거짓 퀴즈 데이터, 전역 변수, DOM 요소, 이벤트 및 함수 정의
+=========================================== -->
+<script>
     // Django 뷰에서 전달한 questions 데이터를 사용 (Django 템플릿 변수)
     const questions = {{ questions|safe }};
 
@@ -226,40 +228,41 @@
     }
 
     // 함수: 퀴즈 완료 화면으로 전환하여 최종 점수 표시
-    function showQuizComplete() {
+     function showQuizComplete() {
       quizWrapper.style.display = "none";
       quizCompleteWrapper.style.display = "block";
       finalScoreEl.textContent = `${correctCount}/${totalQuestions}`;
+
+      fetch("/save-quiz-score/", {
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": getCSRFToken()
+          },
+          body: JSON.stringify({ score: correctCount })
+      }).then(response => response.json())
+        .then(data => console.log("Score saved:", data))
+        .catch(error => console.error("Error saving score:", error));
+    }
+
+    function getCSRFToken() {
+      return document.querySelector('[name=csrfmiddlewaretoken]')?.value || "";
     }
 
     // ===== 추가 버튼 이벤트 =====
-    // 새로운 퀴즈 생성 (재시작) 버튼
-    document.getElementById("createNewQuizBtn").addEventListener("click", () => {
-      currentQuestionIndex = 0;
-      correctCount = 0;
-      quizCompleteWrapper.style.display = "none";
-      quizWrapper.style.display = "block";
-      loadQuestion();
-    });
 
-    // 홈으로 가기 버튼 (메인 페이지 업로드 섹션으로 이동)
-    document.getElementById("goHomeBtn").addEventListener("click", () => {
-      window.location.href = "main.html#upload";
-    });
 
-    // 완료 화면의 재시작 버튼
-    document.getElementById("btnRestart").addEventListener("click", () => {
-      currentQuestionIndex = 0;
-      correctCount = 0;
-      quizCompleteWrapper.style.display = "none";
-      quizWrapper.style.display = "block";
-      loadQuestion();
-    });
+
+
+// "홈으로 가기" 버튼 클릭 이벤트 등록
+document.getElementById("goHomeBtn").addEventListener("click", () => {
+  window.location.href = "/";  // 메인 페이지로 이동
+});
 
     // 공유 버튼 (기능 미구현)
     document.getElementById("btnShare").addEventListener("click", () => {
       alert("공유 기능은 아직 미구현!");
     });
-  </script>
+</script>
 </body>
 </html>

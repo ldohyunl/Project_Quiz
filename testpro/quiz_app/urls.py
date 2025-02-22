@@ -1,13 +1,12 @@
 from django.urls import path
-from . import views
+from .sep_views.upload_view import index
+from .sep_views.dboperations import save_quiz_score
+from .sep_views.quiz_view import multiple_view, short_view, OX_view
 
-# url 과 view 를 연결하기 위해 사용
 urlpatterns = [
-    path('', views.index, name='index'),
-    path('multiple/', views.multiple_view, name='multiple'),
-    path('short/', views.short_view, name = 'short'),
-    path('OX', views.OX_view, name = 'OX'),
+    path('', index, name='index'),
+    path('multiple/', multiple_view, name='multiple'),
+    path('short/', short_view, name='short'),
+    path('OX/', OX_view, name='OX'),
+    path("save-quiz-score/", save_quiz_score, name="save_quiz_score"),
 ]
-                                                # 루트 경로에 해당하는 뷰 함수
-                                                # views.py 파일 안에 있는 index 뷰 함수를 실행
-                                                # index(request) 함수가 호출되면서 클라이언트가 원하는 HTML을 반환
